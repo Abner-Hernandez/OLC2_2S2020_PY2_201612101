@@ -1,4 +1,5 @@
 {
+  "homepage": "http://Abner-Hernandez.github.io/OLC2_2S2020_PY2_201612101",
   "name": "compiladores_2_p2",
   "version": "0.1.0",
   "private": true,
@@ -6,15 +7,21 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "codemirror": "^5.57.0",
+    "graphviz-react": "^1.1.1",
     "react": "^16.13.1",
+    "react-codemirror": "^1.0.0",
+    "react-codemirror2": "^7.2.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts --max_old_space_size=4096 start",
+    "predeploy": "react-scripts --max_old_space_size=4096 build",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -30,5 +37,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^3.1.0"
   }
 }
