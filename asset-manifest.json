@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/OLC2_2S2020_PY2_201612101/static/css/main.1fc973a9.chunk.css",
-    "main.js": "/OLC2_2S2020_PY2_201612101/static/js/main.c59427a0.chunk.js",
-    "main.js.map": "/OLC2_2S2020_PY2_201612101/static/js/main.c59427a0.chunk.js.map",
+    "main.css": "/OLC2_2S2020_PY2_201612101/static/css/main.a73dd17b.chunk.css",
+    "main.js": "/OLC2_2S2020_PY2_201612101/static/js/main.3ebc0664.chunk.js",
+    "main.js.map": "/OLC2_2S2020_PY2_201612101/static/js/main.3ebc0664.chunk.js.map",
     "runtime-main.js": "/OLC2_2S2020_PY2_201612101/static/js/runtime-main.434f8c27.js",
     "runtime-main.js.map": "/OLC2_2S2020_PY2_201612101/static/js/runtime-main.434f8c27.js.map",
     "static/css/2.2afc2e4b.chunk.css": "/OLC2_2S2020_PY2_201612101/static/css/2.2afc2e4b.chunk.css",
-    "static/js/2.1c74c16c.chunk.js": "/OLC2_2S2020_PY2_201612101/static/js/2.1c74c16c.chunk.js",
-    "static/js/2.1c74c16c.chunk.js.map": "/OLC2_2S2020_PY2_201612101/static/js/2.1c74c16c.chunk.js.map",
+    "static/js/2.4fdeac3e.chunk.js": "/OLC2_2S2020_PY2_201612101/static/js/2.4fdeac3e.chunk.js",
+    "static/js/2.4fdeac3e.chunk.js.map": "/OLC2_2S2020_PY2_201612101/static/js/2.4fdeac3e.chunk.js.map",
     "index.html": "/OLC2_2S2020_PY2_201612101/index.html",
-    "precache-manifest.e67d97896dd796f3a33bbab81fe16297.js": "/OLC2_2S2020_PY2_201612101/precache-manifest.e67d97896dd796f3a33bbab81fe16297.js",
+    "precache-manifest.2e3af02fbcafa0412d58ad554d0b7cfb.js": "/OLC2_2S2020_PY2_201612101/precache-manifest.2e3af02fbcafa0412d58ad554d0b7cfb.js",
     "service-worker.js": "/OLC2_2S2020_PY2_201612101/service-worker.js",
     "static/css/2.2afc2e4b.chunk.css.map": "/OLC2_2S2020_PY2_201612101/static/css/2.2afc2e4b.chunk.css.map",
-    "static/css/main.1fc973a9.chunk.css.map": "/OLC2_2S2020_PY2_201612101/static/css/main.1fc973a9.chunk.css.map",
-    "static/js/2.1c74c16c.chunk.js.LICENSE.txt": "/OLC2_2S2020_PY2_201612101/static/js/2.1c74c16c.chunk.js.LICENSE.txt"
+    "static/css/main.a73dd17b.chunk.css.map": "/OLC2_2S2020_PY2_201612101/static/css/main.a73dd17b.chunk.css.map",
+    "static/js/2.4fdeac3e.chunk.js.LICENSE.txt": "/OLC2_2S2020_PY2_201612101/static/js/2.4fdeac3e.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.434f8c27.js",
     "static/css/2.2afc2e4b.chunk.css",
-    "static/js/2.1c74c16c.chunk.js",
-    "static/css/main.1fc973a9.chunk.css",
-    "static/js/main.c59427a0.chunk.js"
+    "static/js/2.4fdeac3e.chunk.js",
+    "static/css/main.a73dd17b.chunk.css",
+    "static/js/main.3ebc0664.chunk.js"
   ]
 }
