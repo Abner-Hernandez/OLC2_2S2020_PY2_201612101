@@ -13,19 +13,19 @@ class For{
         this.column = _col;
     }
 
-    operate(tab) {
-        var count = new Count();
+    operate(tab, count) {
+        //var count = new Count();
         var s = new SymbolTable(tab);
-        count.putInstruction('##Generando el For');
+        count.putInstruction('//Generando el For');
         if(this.declaration !== null){
-            this.declaration.operate(s);
+            this.declaration.operate(s, count);
         }
         
         
         var tagin = count.getNextLabel();
         count.putInstruction(tagin+':');
         
-        var r = this.exp.operate(s);
+        var r = this.exp.operate(s, count);
         if (r === null) {
             try{ add_error_E( {error: "No se puede ejecutar la operacion " + r.type + ", se necesita una condicion logica o relacional.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
             return null;
@@ -39,13 +39,12 @@ class For{
         var c = count.getNextLabel();
         count.pushInit(c);
         for(var i = 0; i<this.body.length; i++){
-            this.body[i].operate(s)
+            this.body[i].operate(s, count)
         }
         
         if(this.assignment !== null){
             count.putInstruction(c+':');
-            console.log(this.assignment);
-            this.assignment.operate(s);
+            this.assignment.operate(s, count);
         }
         
         count.putInstruction('goto '+tagin+';');

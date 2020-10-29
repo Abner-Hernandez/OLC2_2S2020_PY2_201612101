@@ -4,6 +4,7 @@ import Table from './Components/Table';
 import { Graphviz } from 'graphviz-react';
 import { interprete } from './docs/interprete';
 import { grammar } from './docs/grammar';
+import { c3dBlock } from './docs/c3dBlock';
 import { ast } from './docs/ast';
 
 class App extends Component {
@@ -14,8 +15,12 @@ class App extends Component {
     this.child2 = React.createRef();
     this.child3 = React.createRef();
     this.child4 = React.createRef();
+    this.child5 = React.createRef();
+    this.child6 = React.createRef();
     this.text1 = "";
     this.text2 = "";
+    this.text3 = "";
+    this.text4 = "";
     this.ast_translate = "";
     this.ast_interprete = "";
     this.ast = `digraph G {start -> a0;start -> b0;}`;
@@ -45,7 +50,6 @@ class App extends Component {
       this.child3.current.agregar_datos(JSON.parse(localStorage.getItem('errores_T')));
       this.child4.current.agregar_datos(JSON.parse(localStorage.getItem('simbtable_T')));
     }catch(e){ console.log(e); }
-
   }
 
   ejecutar_input = (e) => {
@@ -58,10 +62,12 @@ class App extends Component {
       var ast_trans = ast.parse(this.text2);
       this.ast = ast_trans;
     }catch(e){ console.log(e); console.log("error ast ejecucion"); }
-
+    
 
     try{
-      interprete.parse(this.text2);
+      var data = interprete.parse(this.text2);
+      this.text3 = data;
+      this.child5.current.modify_text(data);
       this.child3.current.agregar_datos(JSON.parse(localStorage.getItem('errores_E')));
       this.child4.current.agregar_datos(JSON.parse(localStorage.getItem('simbtable_E')));
       this.setState({
@@ -72,15 +78,42 @@ class App extends Component {
 
   }
 
+  optimizar_input = (e) => {
+    /*
+    var arr = [];
+    localStorage.setItem('errores_T', JSON.stringify(arr));
+    localStorage.setItem('simbtable_T', JSON.stringify(arr));
+
+    try{
+      var ast_trans = ast.parse(this.text1);
+      this.ast = ast_trans;
+    }catch(e){ console.log(e); console.log("error ast traduccion")}
+    */
+    try{
+      var data = c3dBlock.parse(this.text3);
+      this.text4 = data;
+      this.child6.current.modify_text(data);
+      this.child3.current.removeRow();
+      this.child4.current.removeRow();
+      this.child3.current.agregar_datos(JSON.parse(localStorage.getItem('errores_T')));
+      this.child4.current.agregar_datos(JSON.parse(localStorage.getItem('simbtable_T')));
+    }catch(e){ console.log(e); }
+  }
+
   get_text_translate = (texto) => {
     this.text1 = texto;
-    //var t = this.state.value;
-    //t +="hola";
-    //this.setState({value: t});
   }
 
   get_text_ejecute = (texto) => {
     this.text2 = texto;
+  }
+
+  get_text_optimize = (texto) => {
+    this.text3 = texto;
+  }
+
+  get_text_optimize2 = (texto) => {
+    this.text4 = texto;
   }
 
   state = { showing: false };
@@ -103,6 +136,9 @@ class App extends Component {
             <li className="nav-item">
               <a className="nav-link " role="button"  onClick={this.ejecutar_input}>Ejecutar</a>
             </li>
+            <li className="nav-item">
+              <a className="nav-link " role="button"  onClick={this.optimizar_input}>Optimizar</a>
+            </li>
           </ul>
         </div>
 
@@ -119,6 +155,20 @@ class App extends Component {
             <div className="card-header">Ejecute</div>
               <div className="card-body">
                 <TextArea get_text = {this.get_text_ejecute} ref={this.child2}></TextArea>
+              </div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col">
+              <div className="card-header">three direction's code</div>
+              <div className="card-body">
+                <TextArea get_text = {this.get_text_optimize} ref={this.child5} ></TextArea>
+              </div> 
+            </div>
+            <div className="col">
+            <div className="card-header">three direction's code optimized</div>
+              <div className="card-body">
+                <TextArea get_text = {this.get_text_optimize2} ref={this.child6}></TextArea>
               </div>
             </div>
           </div>

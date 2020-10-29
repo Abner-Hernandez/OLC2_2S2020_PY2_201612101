@@ -9,12 +9,12 @@ class IfList {
 		this.elsebody = [];
 	}
 
-	operate(tab) {
-		var count = new Count();
+	operate(tab, count) {
+		//var count = new Count();
 
 		var out = count.getNextLabel();
 		for (var j = 0; j < this.lif.length; j++) {
-			var r = this.lif[j].exp.operate(tab);
+			var r = this.lif[j].exp.operate(tab, count);
 			if (r === null) {
 				count.putError(Type.SINTACTICO, "No se puede ejecutar la instruccion If, se necesita una condicion logica o relacional.", this.lif[j].row, this.lif[j].column);
 				return null;
@@ -25,7 +25,7 @@ class IfList {
 			var aux = count.generateIf(r.value, '==', 0);
 			var s = new SymbolTable(tab);
 			for (var i = 0; i < this.lif[j].body.length; i++) {
-				this.lif[j].body[i].operate(s);
+				this.lif[j].body[i].operate(s, count);
 			}
 
 			count.putInstruction('goto ' + out + ';');
@@ -40,7 +40,7 @@ class IfList {
 			var s = new SymbolTable(tab);
 			for (var i = 0; i < body.length; i++) {
 
-				body[i].operate(s);
+				body[i].operate(s, count);
 
 			}
 		}

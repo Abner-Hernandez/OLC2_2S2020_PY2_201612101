@@ -1,9 +1,373 @@
 %{
-     var symbolt = new SymbolTable(null);
-     //var global_var = [];
-     var structures = [];
-     var nuevo_arreglo = false;
-     var existe = false;
+     let symbolt = new SymbolTable(null);
+     symbolt.functions = [];
+     let global_var = [];
+     let structures = [];
+     let nuevo_arreglo = false;
+     let existe = false;
+     let nDimension = -1;
+     let idAtributo = 0;
+
+     function crear_metodos_nativos(count)
+     {
+          //insertando metodo para imprimir ---------------------------------------------------------------
+          count.putInstruction('//Insertando Funcion print_3d_c')
+          count.putInstruction('void print_3d_c(){')
+          count.putInstruction('//Insertando parametros de Funcion. Posicion 1')
+          let tag1 = count.paramFunc(Type.LOCAL, 0)
+
+          count.putInstruction('//Empezo el cuerpo de la funcion.')
+          let punt = count.getNextTemporal();
+          let punt2 = count.getNextTemporal();
+          let c = count.getNextTemporal();
+          let tmp = count.getNextTemporal();
+          let tag = count.getNextLabel();
+          let tago = count.getNextLabel();
+          count.putInstruction(punt2+' = stack[(int)'+ tag1 + '];');
+
+          count.putInstruction(c + ' = 0;');
+          count.putInstruction(tag + ':');
+                
+          count.putInstruction(punt+' = '+ punt2 + ' + ' + c + ';');
+          count.putInstruction(tmp+' = heap[(int)' + punt + '];');
+                
+          count.generateIf2(tmp,'==','0',tago);
+          count.putInstruction('printf("%c",(int)' + tmp + ');');
+                
+          count.putInstruction(c+' = '+c+' + 1;');
+          count.putInstruction('goto '+tag+';');
+          count.putInstruction(tago + ':');
+          count.putInstruction('printf("%c",(int)' + 10 + ');');
+          count.putInstruction('return;\n}\n');
+
+          count.resetRelative();
+
+
+          //insertando metodo para toLowerCase -----------------------------------------------------------
+          count.putInstruction('//Insertando Funcion toLowerCase_3d_c')
+          count.putInstruction('void toLowerCase_3d_c(){')
+          count.putInstruction('//Insertando return de Funcion. Posicion 0')
+          let tag2l = count.paramFunc(Type.LOCAL, 0)
+          count.putInstruction('stack[(int)' + tag2l + '] = 0.0;');
+
+          count.putInstruction('//Insertando parametros de Funcion. Posicion 1')
+          let tag1l = count.paramFunc(Type.LOCAL, 1)
+
+          count.putInstruction('//Empezo el cuerpo de la funcion.')
+          let puntl = count.getNextTemporal();
+          let punt2l = count.getNextTemporal();
+          let cl = count.getNextTemporal();
+          let tmpl = count.getNextTemporal();
+          let tagl = count.getNextLabel();
+          let tagol = count.getNextLabel();
+          let tago1l = count.getNextLabel();
+          let tago1ll = count.getNextLabel();
+          count.putInstruction(punt2l+' = stack[(int)'+ tag1l + '];');
+
+          count.putInstruction(cl + ' = 0;');
+          count.putInstruction(tagl + ':');
+                
+          count.putInstruction(puntl+' = '+ punt2l + ' + ' + cl + ';');
+          count.putInstruction(tmpl+' = heap[(int)' + puntl + '];');
+                
+          count.generateIf2(tmpl,'==','0',tagol);
+          count.generateIf2('65','<',tmpl,tago1ll);
+          count.generateIf2('90','>',tmpl,tago1ll);
+          count.putInstruction(tmpl+' = ' + tmpl + ' + 32;');
+          
+          count.putInstruction(tago1ll + ':');
+          count.generateIf2('0','>',cl,tago1l);
+          let ini = count.generateDeclaration(Type.GLOBAL,tmpl,0);
+          count.putInstruction(cl+' = '+cl+' + 1;');
+          count.putInstruction('goto '+tagl+';');
+
+          count.putInstruction(tago1l + ':');
+          let t = count.getNextTemporal();
+          count.putInstruction(t + ' = H;');
+          count.putInstruction('H = H + 1;');
+          count.putInstruction('heap[(int)' + t + '] = ' + tmpl + ';')
+
+          count.putInstruction(cl+' = '+cl+' + 1;');
+          count.putInstruction('goto '+tagl+';');
+          count.putInstruction(tagol + ':');
+          count.generateDeclaration(Type.GLOBAL,0,0);
+          count.putInstruction('stack[(int)' + tag2l + '] = ' + ini + ';');
+          count.putInstruction('return;\n}\n');
+
+          count.resetRelative();
+
+          //insertando metodo para toUpperCase -------------------------------------------------------------
+          count.putInstruction('//Insertando Funcion toUpperCase_3d_c')
+          count.putInstruction('void toUpperCase_3d_c(){')
+          count.putInstruction('//Insertando return de Funcion. Posicion 0')
+          let tag2u = count.paramFunc(Type.LOCAL, 0)
+          count.putInstruction('stack[(int)' + tag2u + '] = 0.0;');
+
+          count.putInstruction('//Insertando parametros de Funcion. Posicion 1')
+          let tag1u = count.paramFunc(Type.LOCAL, 1)
+
+          count.putInstruction('//Empezo el cuerpo de la funcion.')
+          let puntu = count.getNextTemporal();
+          let punt2u = count.getNextTemporal();
+          let cu = count.getNextTemporal();
+          let tmpu = count.getNextTemporal();
+          let tagu = count.getNextLabel();
+          let tagou = count.getNextLabel();
+          let tago1uu = count.getNextLabel();
+          let tago1u = count.getNextLabel();
+          count.putInstruction(punt2u+' = stack[(int)'+ tag1u + '];');
+
+          count.putInstruction(cu + ' = 0;');
+          count.putInstruction(tagu + ':');
+                
+          count.putInstruction(puntu+' = '+ punt2u + ' + ' + cu + ';');
+          count.putInstruction(tmpu+' = heap[(int)' + puntu + '];');
+                
+          count.generateIf2(tmpu,'==','0',tagou);
+          count.generateIf2('97','<',tmpu,tago1uu);
+          count.generateIf2('122','>',tmpu,tago1uu);
+          count.putInstruction(tmpu+' = ' + tmpu + ' - 32;');
+
+          count.putInstruction(tago1uu + ':');
+          count.generateIf2('0','>',cu,tago1u);
+          let iniu = count.generateDeclaration(Type.GLOBAL,tmpu,0);
+          count.putInstruction(cu+' = '+cu+' + 1;');
+          count.putInstruction('goto '+tagu+';');
+
+          count.putInstruction(tago1u + ':');
+          let tu = count.getNextTemporal();
+          count.putInstruction(tu + ' = H;');
+          count.putInstruction('H = H + 1;');
+          count.putInstruction('heap[(int)' + tu + '] = ' + tmpu + ';')
+
+          count.putInstruction(cu+' = '+cu+' + 1;');
+          count.putInstruction('goto '+tagu+';');
+          count.putInstruction(tagou + ':');
+          count.generateDeclaration(Type.GLOBAL,0,0);
+          count.putInstruction('stack[(int)' + tag2u + '] = ' + iniu + ';');
+          count.putInstruction('return;\n}\n');
+
+          count.resetRelative();
+
+          //insertando metodo para CharAt() ----------------------------------------------------------
+          count.putInstruction('//Insertando Funcion CharAt_3d_c')
+          count.putInstruction('void CharAt_3d_c(){')
+          count.putInstruction('//Insertando return de Funcion. Posicion 0')
+          let retc = count.paramFunc(Type.LOCAL, 0)
+          count.putInstruction('stack[(int)' + retc + '] = 0.0;');
+
+          count.putInstruction('//Insertando parametros de Funcion. Posicion 1')
+          let tag1c1 = count.paramFunc(Type.LOCAL, 1)
+
+          count.putInstruction('//Insertando parametros de Funcion. Posicion 2')
+          let tag1c2 = count.paramFunc(Type.LOCAL, 2)
+
+          count.putInstruction('//Empezo el cuerpo de la funcion.')
+          let puntch = count.getNextTemporal();
+          let punt2ch = count.getNextTemporal();
+          let punt2ch2 = count.getNextTemporal();
+          let cch = count.getNextTemporal();
+          let tmpch = count.getNextTemporal();
+          let tagch = count.getNextLabel();
+          let tagoch = count.getNextLabel();
+          count.putInstruction(punt2ch+' = stack[(int)'+ tag1c1 + '];');
+          count.putInstruction(punt2ch2+' = stack[(int)'+ tag1c2 + '];');
+          let tcc = count.getNextTemporal();
+          count.putInstruction(tcc + ' = ' + punt2ch2 + ' - 1;');
+
+          count.putInstruction(cch + ' = 0;');
+          count.putInstruction(tagch + ':');
+                
+          count.putInstruction(puntch+' = '+ punt2ch + ' + ' + cch + ';');
+          count.putInstruction(tmpch+' = heap[(int)' + puntch + '];');
+                
+          count.generateIf2(tmpch,'==','0',tagoch);
+          count.generateIf2(tcc,'==',cch,tagoch);
+                
+          count.putInstruction(cch +' = '+cch+' + 1;');
+          count.putInstruction('goto '+tagch+';');
+          count.putInstruction(tagoch + ':');
+          let retp = count.getNextTemporal();
+          count.putInstruction(retp+' = heap[(int)'+ cch + '];');
+          let tc = count.getNextTemporal();
+          count.putInstruction(tc + ' = H;');
+          count.putInstruction('H = H + 1;');
+          count.putInstruction('heap[(int)' + tc + '] = ' + retp + ';')
+          count.generateDeclaration(Type.GLOBAL,0,0);
+
+          count.putInstruction('stack[(int)' + retc + '] = ' + tc + ';');
+          count.putInstruction('return;\n}\n');
+
+          count.resetRelative();
+
+          //insertando metodo para Concat() -----------------------------------------------------
+          count.putInstruction('//Insertando Funcion Concat_3d_c')
+          count.putInstruction('void Concat_3d_c(){')
+
+          count.putInstruction('//Insertando return de Funcion. Posicion 0')
+          let retcon = count.paramFunc(Type.LOCAL, 0)
+          count.putInstruction('stack[(int)' + retcon + '] = 0.0;');
+
+          count.putInstruction('//Insertando parametros de Funcion. Posicion 1')
+          let tagcon1 = count.paramFunc(Type.LOCAL, 1)
+
+          count.putInstruction('//Insertando parametros de Funcion. Posicion 2')
+          let tagcon2 = count.paramFunc(Type.LOCAL, 2)
+
+          count.putInstruction('//Empezo el cuerpo de la funcion.')
+          let puntcon = count.getNextTemporal();
+          let punt2con = count.getNextTemporal();
+          let punt23con = count.getNextTemporal();
+          let ccon = count.getNextTemporal();
+          let tmpcon = count.getNextTemporal();
+          let tagcon = count.getNextLabel();
+          let tagcon2e = count.getNextLabel();
+          let tconstr1 = count.getNextLabel();
+          let tagocon = count.getNextLabel();
+          let finishcon = count.getNextLabel();
+          count.putInstruction(punt2con+' = stack[(int)'+ tagcon1 + '];');
+          count.putInstruction(punt23con+' = stack[(int)'+ tagcon2 + '];');
+
+          count.putInstruction(ccon + ' = 0;');
+          count.putInstruction(tagcon + ':');
+                
+          count.putInstruction(puntcon+' = '+ punt2con + ' + ' + ccon + ';');
+          count.putInstruction(tmpcon+' = heap[(int)' + puntcon + '];');
+          
+          //primera cadena
+          count.generateIf2(tmpcon,'==','0',tagocon);
+          count.generateIf2('0','>',ccon,tconstr1);
+          let iniucon = count.generateDeclaration(Type.GLOBAL,tmpcon,0);
+          count.putInstruction(ccon+' = '+ccon+' + 1;');
+          count.putInstruction('goto '+tagcon+';');
+
+          count.putInstruction(tconstr1 + ':');
+          let tucon = count.getNextTemporal();
+          count.putInstruction(tucon + ' = H;');
+          count.putInstruction('H = H + 1;');
+          count.putInstruction('heap[(int)' + tucon + '] = ' + tmpcon + ';')
+
+          count.putInstruction(ccon+' = '+ccon+' + 1;');
+          count.putInstruction('goto '+tagcon+';');
+
+          //segunda cadena
+          count.putInstruction(tagocon + ':');
+          count.putInstruction(ccon + ' = 0;');
+          count.putInstruction(tagcon2e + ':');
+
+          count.putInstruction(puntcon+' = '+ punt23con + ' + ' + ccon + ';');
+          count.putInstruction(tmpcon+' = heap[(int)' + puntcon + '];');
+          
+          count.generateIf2(tmpcon,'==','0',finishcon);
+          count.putInstruction(tucon + ' = H;');
+          count.putInstruction('H = H + 1;');
+          count.putInstruction('heap[(int)' + tucon + '] = ' + tmpcon + ';')
+
+          count.putInstruction(ccon+' = '+ccon+' + 1;');
+          count.putInstruction('goto '+tagcon2e+';');
+
+
+          count.putInstruction(finishcon + ':');
+          count.generateDeclaration(Type.GLOBAL,0,0);
+          count.putInstruction('stack[(int)' + retcon + '] = ' + iniucon + ';');
+          count.putInstruction('return;\n}\n');
+
+          count.resetRelative();
+
+          // get value array ----------------------------------------------------------------------------------------------------
+          count.putInstruction('//Insertando Funcion get_value_arr_3d_c')
+          count.putInstruction('void get_value_arr_3d_c(){')
+          count.putInstruction('//Insertando return de Funcion. Posicion 0')
+          let retarr = count.paramFunc(Type.LOCAL, 0)
+          count.putInstruction('stack[(int)' + retarr + '] = 0.0;');
+
+          count.putInstruction('//Insertando parametros de Funcion. Posicion 1') // debe ser el numero de elementos que tiene el arreglo
+          let tagarr1 = count.paramFunc(Type.LOCAL, 1)
+
+          count.putInstruction('//Insertando parametros de Funcion. Posicion 2') // debe ser el acceso al arreglo
+          let tagarr2 = count.paramFunc(Type.LOCAL, 2)
+
+          count.putInstruction('//Insertando parametros de Funcion. Posicion 3') // debe ser donde comienza los punteros a los elementos
+          let tagarr3 = count.paramFunc(Type.LOCAL, 3)
+
+          count.putInstruction('//Empezo el cuerpo de la funcion.')
+          let puntarr = count.getNextTemporal();
+          let punt2arr = count.getNextTemporal();
+          let punt2arr1 = count.getNextTemporal();
+          let punt2arr2 = count.getNextTemporal();
+          let punt2arr3 = count.getNextTemporal();
+          let carr = count.getNextTemporal();
+          let tmparr = count.getNextTemporal();
+          let tagarr = count.getNextLabel();
+          let tagoarr = count.getNextLabel();
+          let tagoarr1 = count.getNextLabel();
+          count.putInstruction(punt2arr +' = stack[(int)'+ tagarr1 + '];');
+          count.putInstruction(punt2arr1 +' = stack[(int)'+ tagarr2 + '];');
+          count.putInstruction(punt2arr2 +' = stack[(int)'+ tagarr3 + '];');
+
+          count.generateIf2(punt2arr,'>',punt2arr1,tagoarr);
+          count.putInstruction(carr + ' = 0;');
+          count.putInstruction(tagarr + ':');
+                
+          count.putInstruction(puntarr+' = '+ punt2arr2 + ' + ' + carr + ';');
+
+          count.generateIf2(carr,'<=',punt2arr,tagoarr);
+          count.generateIf2(carr,'==',punt2arr1,tagoarr1);
+          count.putInstruction(carr+' = '+carr+' + 1;');
+          count.putInstruction('goto '+tagarr+';');
+
+          count.putInstruction(tagoarr1 + ':');
+          count.putInstruction(punt2arr3+' = '+puntarr+';');
+          count.putInstruction('stack[(int)' + retarr + '] = '+punt2arr3+';');
+          count.putInstruction(tagoarr + ':');
+          count.putInstruction('return;\n}\n');
+
+          count.resetRelative();
+
+          //metodo para new array -----------------------------------------------------------
+          count.putInstruction('//Insertando Funcion new_array_3d_c')
+          count.putInstruction('void new_array_3d_c(){')
+          count.putInstruction('//Insertando return de Funcion. Posicion 0')
+          let tagnarr = count.paramFunc(Type.LOCAL, 0)
+          count.putInstruction('stack[(int)' + tagnarr + '] = 0.0;');
+
+          count.putInstruction('//Insertando parametros de Funcion. Posicion 1')
+          let tag1narr = count.paramFunc(Type.LOCAL, 1)
+
+          count.putInstruction('//Empezo el cuerpo de la funcion.')
+          let punt2narr = count.getNextTemporal();
+          let cnarr = count.getNextTemporal();
+          let tmplnarr = count.getNextTemporal();
+          let taglnarr = count.getNextLabel();
+          let tagolnarr = count.getNextLabel();
+          let tago1lnarr = count.getNextLabel();
+          let tago1llnarr = count.getNextLabel();
+          count.putInstruction(punt2narr+' = stack[(int)'+ tag1narr + '];');
+
+          count.putInstruction(cnarr + ' = 1;');
+          
+          let tta = count.getNextTemporal();
+          count.putInstruction(tta + ' = H;');
+          count.putInstruction('H = H + 1;');
+          count.putInstruction('heap[(int)' + tta + '] = 0;')
+
+          count.putInstruction(taglnarr + ':');
+
+          count.generateIf2(cnarr,'>',punt2narr,tagolnarr);
+          let tnarr = count.getNextTemporal();
+          count.putInstruction(tnarr + ' = H;');
+          count.putInstruction('H = H + 1;');
+          count.putInstruction('heap[(int)' + tnarr + '] = 0;')
+
+          count.putInstruction(cnarr+' = '+cnarr+' + 1;');
+          count.putInstruction('goto '+taglnarr+';');
+
+          count.putInstruction(tagolnarr + ':');
+          count.putInstruction('stack[(int)' + tagnarr + '] = ' + t + ';');
+          count.putInstruction('return;\n}\n');
+
+          count.resetRelative();
+     }
 %}
 
 /* Definición Léxica */
@@ -92,6 +456,11 @@
 "pop"                   return 'respop';
 "length"                return 'reslength';
 "graficar_ts"           return 'resgraficar_ts';
+"CharAt"                return 'resCharAt';
+"ToLowerCase"           return 'resToLowerCase';
+"ToUpperCase"           return 'resToUpperCase';
+"Concat"                return 'resConcat';
+"new"                   return 'resnew';
 
 /* Espacios en blanco */
 [ \r\t\n]+                  {}
@@ -124,18 +493,62 @@
 
 ini
 	: INSTRUCTIONSG EOF {
+          
           try
           {
-               console.log("todo termino bien")
+               let count = new Count();
                symbolt.add_types(structures);
-               var tmp = $1;
-               for(let aux of tmp)
-               {
-                    aux.operate(symbolt);
+
+               console.log($1);
+
+               symbolt.functions.unshift(new Function(Type.VOID, Type.VALOR, "main", null, $1, 0, 0))
+               for(let i = 0; i<symbolt.functions.length; i++){
+                    symbolt.functions[i].addParamet(count);
                }
+               for(let i = 1; i<symbolt.functions.length; i++){
+                    count.putInstruction('void '+ symbolt.functions[i].id + '();');
+               }
+               count.putInstruction('\n');
+
+               crear_metodos_nativos(count);
+               count.putInstruction('\n');
+
+               let principal = -1;
+               let lout = count.getNextLabel();
+
+               let a = count.getGlobals();
+
+               for(let i = 0; i<symbolt.functions.length; i++){
+                    if(i != principal){
+                         symbolt.functions[i].operate(symbolt, count);
+                    }
+               //count.resetRelative();
+               //symbolt.functions[i].operate(symbolt);
+               }
+
+               count.joinString(a);
+               let salida = count.getOutput();
+               console.log(salida);
+
+               console.log(count.getError())
+               a = '';
+
                structures = [];
                symbolt = new SymbolTable(null);
-          }catch(e){console.log(e); structures = []; symbolt = new SymbolTable(null);}
+               symbolt.functions = [];
+               global_var = []
+               nuevo_arreglo = false;
+               existe = false;
+               return salida;
+          }catch(e){
+               console.log(e); 
+               structures = [];
+               symbolt = new SymbolTable(null);
+               symbolt.functions = [];
+               global_var = []
+               nuevo_arreglo = false;
+               existe = false;
+          }
      }
      | EOF { console.log("termino vacio") }
 ;
@@ -145,22 +558,22 @@ DEFTYPES
 ;
 
 TYPEDEFID
-     :id { existe = false; for(var d of structures){if(d.name === $1) { existe = true; break;}} if(!existe) structures.push({name: $1, atributes: []}); else try{ add_error_E( {error: "Ya existe un type con el nombre" + $1, type: 'SINTACTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); } }
+     :id { idAtributo = 0; existe = false; for(let d of structures){if(d.name === $1) { existe = true; break;}} if(!existe) structures.push({name: $1, atributes: []}); else try{ add_error_E( {error: "Ya existe un type con el nombre" + $1, type: 'SINTACTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); } }
 ;
 
 ATTRIB
-     :ATTRIB coma id dospuntos TYPES { if(!existe) structures[structures.length - 1].atributes.push({name: $3, type: $5.id}); }
-     |id dospuntos TYPES { if(!existe) structures[structures.length - 1].atributes.push({name: $1, type: $3.id}); }
+     :ATTRIB coma id dospuntos TYPES { if(!existe) structures[structures.length - 1].atributes.push({name: $3, type: $5.id, number: idAtributo++}); }
+     |id dospuntos TYPES { if(!existe) structures[structures.length - 1].atributes.push({name: $1, type: $3.id, number: idAtributo++}); }
 ;
 
 INSTRUCTIONSG
-	: INSTRUCTIONG INSTRUCTIONSG  { if(Array.isArray($1)){ for(var a of $1){ if(a !== null)$2.unshift(a); }}else{if($1 !== null)$2.unshift($1);}  $$ = $2; /*deb*/}
-	| INSTRUCTIONG { if(Array.isArray($1)){ $$ = $1; }else{ if($1 !== null)$$ = [$1];else $$ = [];  } /*deb*/}
+	: INSTRUCTIONG INSTRUCTIONSG  { if(Array.isArray($1)){ for(let a of $1){ if(a !== null)$2.unshift(a); }}else{if($1 !== null){$2.unshift($1);}}  $$ = $2; }
+	| INSTRUCTIONG { if(Array.isArray($1)){ $$ = $1; }else{ if($1 !== null){$$ = [$1];}else $$ = [];}  } }
 ;
 
 INSTRUCTIONG
 	: FUNCTION { symbolt.addFunction($1); $$ = null; }
-     | DECLARATION puntocoma { if($1 !== null){$1.type_var = Type.GLOBAL; /*global_var.push($1);*/} $$ = $1;/* declaration inst */}
+     | DECLARATION puntocoma { if($1 != null){$1.type_var = Type.GLOBAL; } $$ = $1; }
      | ASSIGMENTWITHTYPE puntocoma{ $$ = $1; }
      | DEFTYPES { $$ = null; }
      | IF { $$ = $1; }
@@ -173,10 +586,10 @@ INSTRUCTIONG
      | GRAFICAR puntocoma { $$ = $1; }
      | error { try{ add_error_E( {error: yytext, type: 'SINTACTICO', line: @1.first_line, column: @1.first_column} ); }catch(e){ console.log(e); } }
 ;
-//(_type, _type_exp, _id, _param, _body, _row, _col)
+
 FUNCTION
-    : resfunction id parenta LISTAPARAMETROS parentc RETURNT BLOCK { $$ = new Function(/*0,*/$6.id,$6.access,$2,$4,$7,this._$.first_line,this._$.first_column); }
-    | resfunction id parenta parentc RETURNT BLOCK { $$ = new Function(/*0,*/$5.id,$5.access,$2,null,$6,this._$.first_line,this._$.first_column); }
+    : resfunction id parenta LISTAPARAMETROS parentc RETURNT BLOCK { $$ = new Function( $6.id,$6.access,$2,$4,$7,this._$.first_line,this._$.first_column); }
+    | resfunction id parenta parentc RETURNT BLOCK { $$ = new Function( $5.id,$5.access,$2,null,$6,this._$.first_line,this._$.first_column); }
 ;
 
 RETURNT
@@ -194,26 +607,18 @@ TYPE
      | resboolean { $$ = Type.BOOL; }
      | resstring { $$ = Type.CADENA; }
      | id { $$ = $1; }
-     //| resundefined { $$ = Type.OBJETO; }
 ;
 
 TYPES
      : resarray menor TYPES mayor { $$ = {id: Type.ARREGLO, access: Type.ARREGLO, type: Type.PRIMITIVO}; }
-     | TYPE MULTIDIMENSION { $$ = {id: Type.ARREGLO, access: Type.ARREGLO, type: Type.PRIMITIVO}; if($1 !== Type.ENTERO && $1 !== Type.BOOL && $1 !== Type.CADENA) $$.type = Type.OBJETO; }
+     | TYPE MULTIDIMENSION { $$ = {id: $1, access: Type.ARREGLO, type: Type.PRIMITIVO}; if($1 !== Type.ENTERO && $1 !== Type.BOOL && $1 !== Type.CADENA) $$.type = Type.OBJETO; }
      | TYPE { $$ = {id: $1, access: Type.VALOR, type: Type.VALOR}; if($1 !== Type.ENTERO && $1 !== Type.BOOL && $1 !== Type.CADENA) $$.type = Type.OBJETO; }
 ;
 
 MULTIDIMENSION
-     : llavea llavec MULTIDIMENSION { $$ = $1 + $2 + $3; }
-     | llavea llavec { $$ = $1 + $2; }
+     : llavea llavec MULTIDIMENSION { $$ = $1 + $2 + $3; nDimension++;}
+     | llavea llavec { $$ = $1 + $2; nDimension++;}
 ;
-
-/*
-LISTAPARAMETROS
-     : LISTAPARAMETROS coma id dospuntos TYPES { $$ = $1; $$.push(new Declaration([$3],null,$5.id,$5.access,Type.LOCAL,Type.VAR,Type.PRIMITIVO,0,this._$.first_line,this._$.first_column)); }
-     | id dospuntos TYPES { $$ = []; $$.push(new Declaration([$1],null,$2.id,$2.access,Type.LOCAL,Type.VAR,Type.PRIMITIVO,0,this._$.first_line,this._$.first_column)); }
-;
-*/
 
 LISTAPARAMETROS
      : BETHA LISTAPARAMETROSPRIMA { $$ = $2; } 
@@ -225,11 +630,11 @@ LISTAPARAMETROSPRIMA
 ;
 
 BETHA
-     : id dospuntos TYPES { $$ = []; $$.push(new Declaration($1,null,$3.id,$3.access,Type.LOCAL,Type.VAR,/*Type.PRIMITIVO,*/this._$.first_line,this._$.first_column)); }
+     : id dospuntos TYPES { $$ = []; $$.push(new Declaration($1,null,$3.id,$3.access,Type.LOCAL,Type.VAR,/*Type.PRIMITIVO,*/this._$.first_line,this._$.first_column, nDimension)); nDimension = -1; }
 ;
 
 ALPHA
-     : coma id dospuntos TYPES { $$ = $0; $$.push(new Declaration($2,null,$4.id,$4.access,Type.LOCAL,Type.VAR,/*Type.PRIMITIVO,*/this._$.first_line,this._$.first_column)); }
+     : coma id dospuntos TYPES { $$ = $0; $$.push(new Declaration($2,null,$4.id,$4.access,Type.LOCAL,Type.VAR,/*Type.PRIMITIVO,*/this._$.first_line,this._$.first_column, nDimension)); nDimension = -1; }
 ;
 
 TYPEVAR
@@ -238,48 +643,46 @@ TYPEVAR
 ;
 
 DECLARATION
-     : TYPEVAR LISTID { for(var a of $2){a.type_c = $1;} $$ = $2; $$ = $2; }
+     : TYPEVAR LISTID { for(let a of $2){a.type_c = $1;} $$ = $2; $$ = $2; }
 ;
 
 LISTID
-     : DECBETHA LISTIDPRIM { $$ = $2;  /*testdec*/ }
+     : DECBETHA LISTIDPRIM { $$ = $2; }
 ;
 
 LISTIDPRIM
-     : DECALPHA LISTIDPRIM { $$ = $1; /*testdec*/ } 
+     : DECALPHA LISTIDPRIM { $$ = $1; } 
      | { $$ = $1;}
 ;
 
 DECBETHA
-     : id dospuntos TYPES ASSVALUE { $$ = []; $$.push(new Declaration($1,$4,$3.id,Type.VALOR,Type.LOCAL,null,/*Type.PRIMITIVO,0,*/this._$.first_line,this._$.first_column)); if(nuevo_arreglo) {$$[$$.length-1].type = Type.ARREGLO; $$[$$.length-1].type_exp = Type.ARREGLO;} nuevo_arreglo = false;}
-     | id ASSVALUE{ $$ = []; $$.push(new Declaration($1,$2,undefined,Type.VALOR,Type.LOCAL,null,/*Type.PRIMITIVO,0,*/this._$.first_line,this._$.first_column)); if(nuevo_arreglo) {$$[$$.length-1].type = Type.ARREGLO; $$[$$.length-1].type_exp = Type.ARREGLO;} nuevo_arreglo = false;}
+     : id dospuntos TYPES ASSVALUE { $$ = []; $$.push(new Declaration($1,$4,$3.id,Type.VALOR,Type.LOCAL,null,/*Type.PRIMITIVO,0,*/this._$.first_line,this._$.first_column, nDimension)); if(nuevo_arreglo) {/*$$[$$.length-1].type = Type.ARREGLO; */$$[$$.length-1].type_exp = Type.ARREGLO; } nuevo_arreglo = false; nDimension = -1;}
+     | id ASSVALUE{ $$ = []; $$.push(new Declaration($1,$2,undefined,Type.VALOR,Type.LOCAL,null,/*Type.PRIMITIVO,0,*/this._$.first_line,this._$.first_column, nDimension)); if(nuevo_arreglo) {/*$$[$$.length-1].type = Type.ARREGLO; */$$[$$.length-1].type_exp = Type.ARREGLO;} nuevo_arreglo = false; nDimension = -1;}
 ;
 
 DECALPHA
-     : coma id dospuntos TYPES ASSVALUE { $$ = $0; $$.push(new Declaration($2,$5,$4.id,Type.VALOR,Type.LOCAL,null,/*Type.PRIMITIVO,0,*/this._$.first_line,this._$.first_column)); /*testdec*/  if(nuevo_arreglo) {$$[$$.length-1].type = Type.ARREGLO; $$[$$.length-1].type_exp = Type.ARREGLO;} nuevo_arreglo = false;  }
-     | coma id ASSVALUE{ $$ = $0; $$.push(new Declaration($2,$3,undefined,Type.VALOR,Type.LOCAL,null,/*Type.PRIMITIVO,0,*/this._$.first_line,this._$.first_column)); /*testdec*/ if(nuevo_arreglo) {$$[$$.length-1].type = Type.ARREGLO; $$[$$.length-1].type_exp = Type.ARREGLO;} nuevo_arreglo = false;}
+     : coma id dospuntos TYPES ASSVALUE { $$ = $0; $$.push(new Declaration($2,$5,$4.id,Type.VALOR,Type.LOCAL,null,/*Type.PRIMITIVO,0,*/this._$.first_line,this._$.first_column, nDimension)); /*testdec*/  if(nuevo_arreglo) {/*$$[$$.length-1].type = Type.ARREGLO; */$$[$$.length-1].type_exp = Type.ARREGLO;} nuevo_arreglo = false; nDimension = -1;}
+     | coma id ASSVALUE{ $$ = $0; $$.push(new Declaration($2,$3,undefined,Type.VALOR,Type.LOCAL,null,/*Type.PRIMITIVO,0,*/this._$.first_line,this._$.first_column, nDimension)); /*testdec*/ if(nuevo_arreglo) {/*$$[$$.length-1].type = Type.ARREGLO; */$$[$$.length-1].type_exp = Type.ARREGLO;} nuevo_arreglo = false; nDimension = -1;}
 ;
 
 ASSVALUE
      : igual EXPRT { $$ = $2; }
-     //| igual llavea llavec { $$ = undefined; nuevo_arreglo = true; }
-     //| igual llavea DATAPRINT llavec { $$ = $3; nuevo_arreglo = true; }     
      | igual DECASSTYPE { $$ = $2; }
      | { $$ = undefined; }
 ;
 
 BLOCK
-     : corchetea BLOCK2 { $$ = $2;  }//INSTRUCTIONS corchetec
+     : corchetea BLOCK2 { $$ = $2; }
 ;
 
 BLOCK2
-     : INSTRUCTIONS corchetec { $$ = $1; /*here*/}
+     : INSTRUCTIONS corchetec { $$ = $1; }
      | corchetec { $$ = []; }
 ;
 
 INSTRUCTIONS
-     : INSTRUCTION INSTRUCTIONS { if(Array.isArray($1)){ for(var a of $1){ $2.unshift(a); }}else{$2.unshift($1);}  $$ = $2; /*deb*/}
-     | INSTRUCTION { if(Array.isArray($1)){ $$ = $1; }else{ $$ = [$1]; } /*deb*/}
+     : INSTRUCTION INSTRUCTIONS { if(Array.isArray($1)){ for(let a of $1){ $2.unshift(a); }}else{$2.unshift($1);}  $$ = $2; }
+     | INSTRUCTION { if(Array.isArray($1)){ $$ = $1; }else{ $$ = [$1]; } }
 ;
 
 INSTRUCTION
@@ -302,8 +705,8 @@ INSTRUCTION
 
 ASSIGNMENT
     : IDVALOR OPERADOR igual EXPRT { if($1.length === 1 && $1[0].type === Type.ID){ $1 = $1[0]; } $$ = new Assignment($1,new Arithmetical($1,$4,$2,Type.VALOR,this._$.first_line,this._$.first_column),this._$.first_line,this._$.first_column); $$.change_tipe($2);}
-    | id DECINC { $$ = new UnaryNoReturn($1,$2,this._$.first_line,this._$.first_column); }
-    | IDVALOR igual EXPRT { /*DEBERIA AQUI*/if($1.length === 1 && $1[0].type === Type.ID){ $1 = $1[0]; } $$ = new Assignment($1,$3,this._$.first_line,this._$.first_column); }
+    | id DECINC { $$ = new Unary($1,$2,this._$.first_line,this._$.first_column); }
+    | IDVALOR igual EXPRT { if($1.length === 1 && $1[0].type === Type.ID){ $1 = $1[0]; } $$ = new Assignment($1,$3,this._$.first_line,this._$.first_column); }
 ;
 
 OPERADOR
@@ -318,7 +721,7 @@ OPERADOR
 ASSIGMENTWITHTYPE
      : IDVALOR CONTENTASWT { $$ = $2; $$.id = $1; }
      | ASSIGNMENT  { $$ = $1; }
-     | IDVALORASS { $$ = new UnaryNoReturn($1,".push()",this._$.first_line,this._$.first_column); }
+     | IDVALORASS { $$ = new Unary($1,".push()",this._$.first_line,this._$.first_column); }
 ;
 
 CONTENTASWT
@@ -349,12 +752,12 @@ PARAMETROUNITARIO
 ;
 
 IF
-     :  CELSE ELSE {var tf = $1;tf.elsebody = $2;$$ = tf;}
+     :  CELSE ELSE {let tf = $1;tf.elsebody = $2;$$ = tf;}
 ;
 
 CELSE
-     : CELSE reselse IFF {var tc = $1; tc.lif.push($3); $$ = tc;}
-     | IFF {var t = new IfList();t.lif.push($1);$$ = t;}
+     : CELSE reselse IFF {let tc = $1; tc.lif.push($3); $$ = tc;}
+     | IFF {let t = new IfList();t.lif.push($1);$$ = t;}
 ;
 
 ELSE
@@ -367,10 +770,9 @@ IFF
 ;
 
 SWITCH
-     : resswitch PARAMETROUNITARIO corchetea CASES DEFAULT corchetec {var ts = new Switch($2,$4,$5,this._$.first_line,this._$.first_column);console.log("entrooo");$$ = ts;}
+     : resswitch PARAMETROUNITARIO corchetea CASES DEFAULT corchetec {let ts = new Switch($2,$4,$5,this._$.first_line,this._$.first_column);console.log("entrooo");$$ = ts;}
 ;
 
-//"<li><span class=\"caret\">EXPRESION</span>\n<ul class=\"nested\">\n" + $2 + "</ul>\n</li>"
 CASES
      : CASES rescase EXPRT dospuntos INSTRUCTIONS {$1.push(new If($3,$5,Type.IF,this._$.first_line,this._$.first_column));}
      | CASES rescase EXPRT dospuntos {$1.push(new If($3,[],Type.IF,this._$.first_line,this._$.first_column));}
@@ -487,8 +889,9 @@ EXP3
      | CALLF { $$ = $1; }
      | IDVALOR { if($1.length === 1 && $1[0].type === Type.ID){ $$ = $1[0]; }else{ $$ = new Value($1,Type.ARREGLO,Type.VALOR,this._$.first_line,this._$.first_column); } }
      | IDVALOR DECINC { if($1.length === 1 && $1[0].type === Type.ID){ $$ = new Unary($1[0],$2,this._$.first_line,this._$.first_column); }else{ $$ = new Unary($1,$2,this._$.first_line,this._$.first_column); } }
-     | igual llavea llavec { $$ = undefined; nuevo_arreglo = true; }
-     | igual llavea DATAPRINT llavec { $$ = $3; nuevo_arreglo = true; }   
+     | llavea llavec {$$ = new Value(new Value(0, Type.ENTERO, Type.VALOR, this._$.first_line,this._$.first_column),Type.NULL,Type.ARREGLO,this._$.first_line,this._$.first_column);}
+     | llavea DATAPRINT llavec {$$ = new Value($2,Type.NULL,Type.ARREGLO,this._$.first_line,this._$.first_column);}
+     | resnew resarray parenta EXPRT parentc {$$ = new Value($4,Type.NULL,Type.ARREGLO,this._$.first_line,this._$.first_column);}
 ;
 
 
@@ -510,11 +913,15 @@ IDVALOR2
      : punto IDVALOR { $$ = $2;  }
      | punto respop parenta parentc { $$ = [new Value(".pop()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
      | punto reslength { $$ = [new Value($2,Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
+     | punto resCharAt parenta EXPRT parentc { $$ = [$4,new Value(".charAt()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
+     | punto resToLowerCase parenta parentc { $$ = [new Value(".toLowerCase()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
+     | punto resToUpperCase parenta parentc { $$ = [new Value(".toUpperCase()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
+     | punto resConcat parenta EXPRT parentc { $$ = [$4,new Value(".Concat()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
      | { $$ = []; }
 ;
 
 CALLF
-     :id parenta PARAMETERS { $$ = new Call($1,Type.LLAMADA,null,$3,this._$.first_line,this._$.first_column); }
+     :id parenta PARAMETERS { $$ = new Call($1,Type.LLAMADA,Type.LLAMADA,$3,this._$.first_line,this._$.first_column); }
 ;
 
 PARAMETERS
@@ -546,5 +953,5 @@ IDVALOR2ASS
 ;
 
 GRAFICAR
-     :resgraficar_ts parenta parentc { $$ = new UnaryNoReturn($1,Type.GRAFICAR,this._$.first_line,this._$.first_column); }
+     :resgraficar_ts parenta parentc { $$ = new Unary($1,Type.GRAFICAR,this._$.first_line,this._$.first_column); }
 ;

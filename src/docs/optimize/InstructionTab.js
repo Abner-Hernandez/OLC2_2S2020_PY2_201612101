@@ -122,19 +122,19 @@ class InstructionTab {
                 case Type.DECLARATION:
                     switch (this.instructions[i].t) {
                         case 1:
-                            block += 'var ' + this.instructions[i].id + ';\\n';
+                            block += 'double ' + this.instructions[i].id + ';\\n';
                             break;
                         case 2:
-                            block += 'var ' + this.instructions[i].id + ' = ' + this.instructions[i].left.id + this.instructions[i].op + this.instructions[i].right.id + ';\\n';
+                            block += 'double ' + this.instructions[i].id + ' = ' + this.instructions[i].left.id + this.instructions[i].op + this.instructions[i].right.id + ';\\n';
                             break;
                         case 3:
-                            block += 'var ' + this.instructions[i].id + ' = ' + this.instructions[i].left.id + ';\\n';
+                            block += 'double ' + this.instructions[i].id + ' = ' + this.instructions[i].left.id + ';\\n';
                             break;
                         case 4:
-                            block += 'var Stack[];\\n';
+                            block += 'double Stack[];\\n';
                             break;
                         case 5:
-                            block += 'var Heap[];\\n';
+                            block += 'double Heap[];\\n';
                             break;
                     }
                     break;

@@ -130,6 +130,11 @@ export
 "pop"                   return 'respop';
 "length"                return 'reslength';
 "graficar_ts"           return 'resgraficar_ts';
+"CharAt"                return 'resCharAt';
+"ToLowerCase"           return 'resToLowerCase';
+"ToUpperCase"           return 'resToUpperCase';
+"Concat"                return 'resConcat';
+"new"                   return 'resnew';
 
 /* Espacios en blanco */
 [ \r\t\n]+                  {}
@@ -558,6 +563,7 @@ EXP3
      | IDVALOR DECINC {$$ = new Node(id++,"EXP3"); $$.children.push($1); $$.children.push($2);}
      | llavea llavec {$$ = new Node(id++,"EXP3");$$.children.push(new Node(id++,$1));$$.children.push(new Node(id++,$2));}
      | llavea DATAPRINT llavec {$$ = new Node(id++,"EXP3");$$.children.push(new Node(id++,$1)); $$.children.push($2);$$.children.push(new Node(id++,$3));}
+     | resnew resarray parenta EXPRT parentc {$$ = new Node(id++,"EXP3");$$.children.push(new Node(id++,$1));$$.children.push(new Node(id++,$2));$$.children.push(new Node(id++,$3));$$.children.push($4);$$.children.push(new Node(id++,$5));}
 ;
 
 IDVALOR  
@@ -581,6 +587,10 @@ IDVALOR2
      : punto IDVALOR {$$ = new Node(id++,"IDVALOR2");$$.children.push(new Node(id++,$1)); $$.children.push($2);}
      | punto respop parenta parentc {$$ = new Node(id++,"IDVALOR2"); $$.children.push(new Node(id++,$1)); $$.children.push(new Node(id++,$2)); $$.children.push(new Node(id++,$3)); $$.children.push(new Node(id++,$4));}
      | punto reslength {$$ = new Node(id++,"IDVALOR2"); $$.children.push(new Node(id++,$1)); $$.children.push(new Node(id++,$2));}
+     | punto resCharAt parenta EXPRT parentc {$$ = new Node(id++,"IDVALOR2ASS"); $$.children.push(new Node(id++,$1)); $$.children.push(new Node(id++,$2)); $$.children.push(new Node(id++,$3)); $$.children.push($4); $$.children.push(new Node(id++,$5));}
+     | punto resToLowerCase parenta parentc {$$ = new Node(id++,"IDVALOR2"); $$.children.push(new Node(id++,$1)); $$.children.push(new Node(id++,$2)); $$.children.push(new Node(id++,$3)); $$.children.push(new Node(id++,$4));}
+     | punto resToUpperCase parenta parentc {$$ = new Node(id++,"IDVALOR2"); $$.children.push(new Node(id++,$1)); $$.children.push(new Node(id++,$2)); $$.children.push(new Node(id++,$3)); $$.children.push(new Node(id++,$4));}
+     | punto resConcat parenta EXPRT parentc {$$ = new Node(id++,"IDVALOR2ASS"); $$.children.push(new Node(id++,$1)); $$.children.push(new Node(id++,$2)); $$.children.push(new Node(id++,$3)); $$.children.push($4); $$.children.push(new Node(id++,$5));}
      | {$$ = new Node(id++,"IDVALOR2"); $$.children.push(new Node(id++,"epsilon"));}
 ;
 

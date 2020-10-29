@@ -9,9 +9,9 @@ class Cast {
         this.column = _column;
     }
 
-    operate(tab) {
-        var count = new Count();
-        var e = this.exp.operate(tab);
+    operate(tab, count) {
+        //var count = new Count();
+        var e = this.exp.operate(tab, count);
         if (e === null) {
             count.putError(Type.SEMANTICO, 'Expresion No valida para Castear.', this.row, this.column);
             return null;

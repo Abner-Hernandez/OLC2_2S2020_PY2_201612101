@@ -13,8 +13,8 @@ class Logical {
         this.column = _column;
     }
 
-    operate(tab) {
-        var count = new Count();
+    operate(tab, count) {
+        //var count = new Count();
         var tempL = null;
         var tempR = null;
         /*var tf = '';
@@ -26,11 +26,11 @@ class Logical {
             //count.pushTagsvf(tf);
         }*/
         if (this.node_right !== null) {
-            tempR = this.node_right.operate(tab);
+            tempR = this.node_right.operate(tab, count);
         }
 
         if (this.node_left !== null) {
-            tempL = this.node_left.operate(tab);
+            tempL = this.node_left.operate(tab, count);
         }
 
         if (tempR !== null && tempL !== null) {
@@ -45,8 +45,8 @@ class Logical {
                                 //return new Value(tempL.value && tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
                                 //return new Value(count.generateInstruction(tempL.value, '&&', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
 
-                                count.putInstruction('if(' + tempL.value + ' <> 1) goto ' + tf + ';');
-                                count.putInstruction('if(' + tempR.value + ' <> 1) goto ' + tf + ';');
+                                count.putInstruction('if(' + tempL.value + ' != 1) goto ' + tf + ';');
+                                count.putInstruction('if(' + tempR.value + ' != 1) goto ' + tf + ';');
                                 //count.popTagsvf()
                                 /*if (count.getTagsSize() === 0) {
                                     var to = count.getNextLabel();
@@ -66,8 +66,8 @@ class Logical {
                             case Type.OR:
                                 //return new Value(tempL.value || tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
                                 //return new Value(count.generateInstruction(tempL.value, '||', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
-                                count.putInstruction('if(' + tempL.value + ' === 1) goto ' + tf + ';');
-                                count.putInstruction('if(' + tempR.value + ' === 1) goto ' + tf + ';');
+                                count.putInstruction('if(' + tempL.value + ' == 1) goto ' + tf + ';');
+                                count.putInstruction('if(' + tempR.value + ' == 1) goto ' + tf + ';');
                                 //count.popTagsvf()
                                 /*if (count.getTagsSize() === 0) {
                                     var to = count.getNextLabel();
@@ -87,7 +87,7 @@ class Logical {
                             case Type.XOR:
                                 //return new Value(!(tempL.value === tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                                 //return new Value(count.generateInstruction(!(tempL.value, '==', tempR.value)), Type.BOOL, Type.VALOR, this.row, this.column);
-                                count.putInstruction('if(' + tempL.value + ' <> ' + tempR.value + ') goto ' + tf + ';');
+                                count.putInstruction('if(' + tempL.value + ' != ' + tempR.value + ') goto ' + tf + ';');
                                 //count.popTagsvf()
                                 /*if (count.getTagsSize() === 0) {
                                     var to = count.getNextLabel();
@@ -118,7 +118,7 @@ class Logical {
                     var tf = count.getNextLabel();
                     var to = count.getNextLabel();
                     var t1 = count.getNextTemporal();
-                    count.putInstruction('if(' + tempL.value + ' === 1) goto ' + tf + ';');
+                    count.putInstruction('if(' + tempL.value + ' == 1) goto ' + tf + ';');
 
                     count.putInstruction(t1 + ' = 1' + ';');
                     count.putInstruction('goto ' + to + ';');

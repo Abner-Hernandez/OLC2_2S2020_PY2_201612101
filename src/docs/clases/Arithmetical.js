@@ -14,31 +14,37 @@ class Arithmetical {
         this.column = _column;
     }
 
-    operate(tab) {
+    operate(tab, count) {
         var tempL = null;
         var tempR = null;
-        if (this.node_right !== null) {
-            if(!(this.node_right instanceof Array)){
-                tempR = this.node_right.operate(tab);
-            }else{
-                tempR = this.node_right[0].operate(tab);
-            }
-        }
-
-        if (this.node_left !== null) {
+        if (this.node_left != null) {
             if(!(this.node_left instanceof Array)){
-                tempL = this.node_left.operate(tab);
+                tempL = this.node_left.operate(tab, count);
             }else{
-                tempL = this.node_left[0].operate(tab);
+                tempL = this.node_left[0].operate(tab, count);
             }
             
         }
 
-        if (tempR !== null && tempL !== null) {
-            var count = new Count();
-            if (tempR.type_exp === Type.VALOR && tempL.type_exp === Type.VALOR) {
-                if (tempL.type === Type.ENTERO && tempR.type === Type.ENTERO) {
-                    if (null !== this.type) {
+        if (this.node_right != null) {
+            if(!(this.node_right instanceof Array)){
+                tempR = this.node_right.operate(tab, count);
+            }else{
+                tempR = this.node_right[0].operate(tab, count);
+            }
+        }
+
+        /*console.log("izq")
+        console.log(this.node_left)
+        console.log("der")
+        console.log(this.node_right)*/
+
+        if (tempR != null && tempL != null) {
+            //var count = new Count();
+            if (tempR.type_exp == Type.VALOR && tempL.type_exp == Type.VALOR) {
+                if (tempL.type == Type.ENTERO && tempR.type == Type.ENTERO) {
+                    if (null != this.type) {
+                        
                         switch (this.type) {
                             case Type.SUMA:
                                 var ret = count.generateInstruction(tempL.value, '+', tempR.value)
@@ -59,7 +65,7 @@ class Arithmetical {
                                 var tagin = count.getNextLabel();
                                 var tagout = count.getNextLabel();
                                 count.putInstruction(tagin+':');
-                                count.putInstruction('if(2 >'+op2+') goto '+tagout+';');
+                                count.putInstruction('if(2 > '+op2+') goto '+tagout+';');
                                 count.putInstruction(l+' = '+l+' * '+op1+';');
                                 count.putInstruction(op2+' = '+op2+' - 1;');
                                 count.putInstruction('goto '+tagin+';');
@@ -78,13 +84,13 @@ class Arithmetical {
                     if (null !== this.type) {
                         switch (this.type) {
                             case Type.SUMA:
-                                return new Value(new Count().generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.RESTA:
-                                return new Value(new Count().generateInstruction(tempL.value, '-', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '-', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.MULTIPLICACION:
-                                return new Value(new Count().generateInstruction(tempL.value, '*', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '*', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.DIVISION:
-                                return new Value(new Count().generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             default:
                                 try{ add_error_E( {error: "No se puede ejecutar la operacion " + this.type.toString() + ", No reconocida o No Permitida.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                                 break;
@@ -95,13 +101,13 @@ class Arithmetical {
                     if (null !== this.type) {
                         switch (this.type) {
                             case Type.SUMA:
-                                return new Value(new Count().generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.RESTA:
-                                return new Value(new Count().generateInstruction(tempL.value, '-', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '-', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.MULTIPLICACION:
-                                return new Value(new Count().generateInstruction(tempL.value, '*', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '*', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.DIVISION:
-                                return new Value(new Count().generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             default:
                                 try{ add_error_E( {error: "No se puede ejecutar la operacion " + this.type.toString() + ", No reconocida o No Permitida.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                                 break;
@@ -112,15 +118,15 @@ class Arithmetical {
                     if (null !== this.type) {
                         switch (this.type) {
                             case Type.SUMA:
-                                return new Value(new Count().generateInstruction(tempL.value, '+', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '+', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
                             case Type.RESTA:
-                                return new Value(new Count().generateInstruction(tempL.value, '-', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '-', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
                             case Type.MULTIPLICACION:
-                                return new Value(new Count().generateInstruction(tempL.value, '*', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '*', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
                             case Type.DIVISION:
-                                return new Value(new Count().generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             default:
-                                var err = new Count().putError(Type.SEMANTICO, "No se puede ejecutar la operacion " + this.type.toString() + ", No reconocida o No Permitida.", this.row, this.column);
+                                try{ add_error_E( {error: "No se puede ejecutar la operacion " + this.type.toString() + ", No reconocida o No Permitida.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                                 break;
                         }
                     }
@@ -129,13 +135,13 @@ class Arithmetical {
                     if (null !== this.type) {
                         switch (this.type) {
                             case Type.SUMA:
-                                return new Value(new Count().generateInstruction(tempL.value, '+', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '+', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
                             case Type.RESTA:
-                                return new Value(new Count().generateInstruction(tempL.value, '-', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '-', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
                             case Type.MULTIPLICACION:
-                                return new Value(new Count().generateInstruction(tempL.value, '*', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '*', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
                             case Type.DIVISION:
-                                return new Value(new Count().generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             default:
                                 try{ add_error_E( {error: "No se puede ejecutar la operacion " + this.type.toString() + ", No reconocida o No Permitida.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                                 break;
@@ -146,7 +152,7 @@ class Arithmetical {
                     if (null !== this.type) {
                         switch (this.type) {
                             case Type.SUMA:
-                                return new Value(new Count().generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             default:
                                 try{ add_error_E( {error: "No se puede ejecutar la operacion " + this.type.toString() + ", No reconocida o No Permitida.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                                 break;
@@ -157,7 +163,7 @@ class Arithmetical {
                     if (null !== this.type) {
                         switch (this.type) {
                             case Type.SUMA:
-                                return new Value(new Count().generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             default:
                                 try{ add_error_E( {error: "No se puede ejecutar la operacion " + this.type.toString() + ", No reconocida o No Permitida.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                                 break;
@@ -180,13 +186,13 @@ class Arithmetical {
                     if (null !== this.type) {
                         switch (this.type) {
                             case Type.SUMA:
-                                return new Value(new Count().generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.RESTA:
-                                return new Value(new Count().generateInstruction(tempL.value, '-', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '-', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.MULTIPLICACION:
-                                return new Value(new Count().generateInstruction(tempL.value, '*', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '*', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.DIVISION:
-                                return new Value(new Count().generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             default:
                                 try{ add_error_E( {error: "No se puede ejecutar la operacion " + this.type.toString() + ", No reconocida o No Permitida.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                                 break;
@@ -197,13 +203,13 @@ class Arithmetical {
                     if (null !== this.type) {
                         switch (this.type) {
                             case Type.SUMA:
-                                return new Value(new Count().generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.RESTA:
-                                return new Value(new Count().generateInstruction(tempL.value, '-', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '-', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.MULTIPLICACION:
-                                return new Value(new Count().generateInstruction(tempL.value, '*', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '*', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.DIVISION:
-                                return new Value(new Count().generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             default:
                                 try{ add_error_E( {error: "No se puede ejecutar la operacion " + this.type.toString() + ", No reconocida o No Permitida.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                                 break;
@@ -214,13 +220,13 @@ class Arithmetical {
                     if (null !== this.type) {
                         switch (this.type) {
                             case Type.SUMA:
-                                return new Value(new Count().generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '+', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.RESTA:
-                                return new Value(new Count().generateInstruction(tempL.value, '-', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '-', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.MULTIPLICACION:
-                                return new Value(new Count().generateInstruction(tempL.value, '*', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '*', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             case Type.DIVISION:
-                                return new Value(new Count().generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             default:
                                 try{ add_error_E( {error: "No se puede ejecutar la operacion " + this.type.toString() + ", No reconocida o No Permitida.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                                 break;
@@ -231,13 +237,13 @@ class Arithmetical {
                     if (null !== this.type) {
                         switch (this.type) {
                             case Type.SUMA:
-                                return new Value(new Count().generateInstruction(tempL.value, '+', tempR.value), Type.CADENA, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '+', tempR.value), Type.CADENA, Type.VALOR, this.row, this.column);
                             case Type.RESTA:
-                                return new Value(new Count().generateInstruction(tempL.value, '-', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '-', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
                             case Type.MULTIPLICACION:
-                                return new Value(new Count().generateInstruction(tempL.value, '*', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '*', tempR.value), Type.ENTERO, Type.VALOR, this.row, this.column);
                             case Type.DIVISION:
-                                return new Value(new Count().generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
+                                return new Value(count.generateInstruction(tempL.value, '/', tempR.value), Type.DECIMAL, Type.VALOR, this.row, this.column);
                             default:
                                 try{ add_error_E( {error: "No se puede ejecutar la operacion " + this.type.toString() + ", No reconocida o No Permitida.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                                 break;

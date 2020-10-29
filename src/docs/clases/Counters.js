@@ -4,6 +4,8 @@ class Counter
 {
     constructor(_type_exp, _row, _column) {
         this.temporals = 0;
+        this.temporalsArr = 0;
+        this.temporalsArrD = [];
         this.labels = 0;
         this.output = '';
         this.errors = '';
@@ -124,6 +126,10 @@ class Counter
         return r;
     }
 
+    addPrevRelative() {
+        this.relative[this.relative.length - 1] += this.relative[this.relative.length - 2];
+    }
+
     getRelative() {
         return this.relative[this.relative.length - 1];
     }
@@ -173,11 +179,11 @@ class Counter
             this.putInstruction(t + ' = H;');
             this.putInstruction('H = H + 1;');
             //this.tempor++;
-            this.putInstruction('heap[' + t + '] = ' + value + ';')
+            this.putInstruction('heap[(int)' + t + '] = ' + value + ';')
         } else {
 
             this.putInstruction(t + ' = P + ' + relative + ';');
-            this.putInstruction('stack[' + t + '] = ' + value + ';')
+            this.putInstruction('stack[(int)' + t + '] = ' + value + ';')
         }
         return t;
     }
@@ -200,11 +206,11 @@ class Counter
             this.putInstruction(t + ' = H;');
             this.putInstruction('H = H + 1;');
             //this.tempor++;
-            this.putInstruction('heap[' + t + '] = ' + value + ';')
+            this.putInstruction('heap[(int)' + t + '] = ' + value + ';')
         } else {
 
-            this.putInstruction(t + ' = ' + ambit + ' + ' + relative + ';');
-            this.putInstruction('stack[' + t + '] = ' + value + ';')
+            //this.putInstruction(t + ' = ' + ambit + ' + ' + relative + ';');
+            this.putInstruction('stack[(int)' + ambit + '] = ' + value + ';')
         }
         return t;
     }
@@ -213,6 +219,13 @@ class Counter
         var n = this.temporals;
         this.temporals++
         return 't' + n;
+    }
+
+    getNextTemporalArr(nDimension) {
+        var n = this.temporalsArr;
+        this.temporalsArr++
+        this.temporalsArrD.push(['arr' + n, nDimension]);
+        return 'arr' + n;
     }
 
     getNextLabel() {
@@ -230,11 +243,21 @@ class Counter
     }
 
     getOutput() {
-        var temp = 'var t0';
+        var temp = '#include <stdio.h>\ndouble heap[16384];\ndouble stack[16394];\ndouble P = 0;\ndouble H = 0;\ndouble t0';
         for (var i = 1; i <= this.temporals; i++) {
             temp += ',t' + i
         }
-        temp += ';\nvar Stack[];\nvar Heap[];\nvar P=0;\nvar H=0;\n\n';
+        temp += ';\n\n'
+        
+        if(this.temporalsArrD.length > 0 )
+        {
+            temp += 'double ' + this.temporalsArrD[0][0] + "["+ this.temporalsArrD[0][1] +"]"
+            for (var i = 1; i <= this.temporalsArrD; i++) {
+                temp += ',' + this.temporalsArrD[i][0] + "["+ this.temporalsArrD[i][1] +"]"
+            }
+            temp += ';\n\n'
+        }
+
         this.output = temp + this.output;
         return this.output;
     }
@@ -250,7 +273,7 @@ class Counter
     }
 
     putPrincipal(idd, L) {
-        this.output = 'call ' + idd + ';\n\ngoto ' + L + ';\n\n' + this.output;
+        this.output = idd + '();\n\n' + this.output;
     }
 
     putInstruction(instruction) {
@@ -272,9 +295,9 @@ class Counter
         return this.Rsymbol;
     }
 
-    putSymbol(_ambit, _type, _type_exp, _type_var,  _type_c, _type_o, _id, _pointer,_tag) {
+    putSymbol(_ambit, _type, _type_exp, _type_var,  _type_c, /*_type_o,*/ _id, _pointer,_tag) {
         //this.errors += 'ERROR ' + type + ', ' + instruction + ', Fila: ' + row + ', Columna: ' + column + '\n';
-        this.Rsymbol.push({ambit: _ambit, type: _type, type_exp: _type_exp, type_var: _type_var, type_c:  _type_c, type_o: _type_o, id: _id, pointer: _pointer});
+        this.Rsymbol.push({ambit: _ambit, type: _type, type_exp: _type_exp, type_var: _type_var, type_c:  _type_c, /*type_o: _type_o,*/ id: _id, pointer: _pointer});
     }
 
     getFunction() {

@@ -4,8 +4,7 @@ import { add_error_E } from './Reports';
 
 class Return {
 
-    constructor(_ambit, _value, _type, _type_exp, _row, _column) {
-        this.ambit = _ambit;
+    constructor(_value, _type, _type_exp, _row, _column) {
         this.value = _value;
         this.type = _type;
         this.type_exp = _type_exp
@@ -13,8 +12,9 @@ class Return {
         this.column = _column;
     }
 
-    operate(tab) {
-        var count = new Count();
+    operate(tab, count) {
+        //var count = new Count();
+        console.log(this)
         var symb = null;
         var i = 0;
         symb = tab.getSymbol('return');
@@ -28,12 +28,12 @@ class Return {
             //error
             return null;
         }
-        if (this.value !== null) {
+        if (this.value != null) {
             var tmpExp = null;
             if(!(this.value instanceof Array)){
-                tmpExp = this.value.operate(tab);
+                tmpExp = this.value.operate(tab, count);
             }else{
-                tmpExp = this.value[0].operate(tab);
+                tmpExp = this.value[0].operate(tab, count);
             }
             
             if (tmpExp === null) {
@@ -49,7 +49,7 @@ class Return {
             symb.type_exp = tmpExp.type_exp;
             count.generateDeclaration(Type.LOCAL, tmpExp.value, symb.pointer);
         } else {
-            count.generateDeclaration(Type.LOCAL, null, tab.symbols[i].pointer);
+            count.generateDeclaration(Type.LOCAL, 0.0, tab.symbols[i].pointer);
         }
         count.putInstruction('goto '+count.getExitRet()+';')
     }

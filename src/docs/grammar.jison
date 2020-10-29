@@ -7,7 +7,8 @@
      let  errores = [];
      let  vars_a = [];
      let  aux_string = "";
-     
+     let name_f = [];
+
      function add_traduction(content)
      {
           traduction += content;
@@ -99,6 +100,11 @@
 "pop"                   return 'respop';
 "length"                return 'reslength';
 "graficar_ts"           return 'resgraficar_ts';
+"CharAt"                return 'resCharAt';
+"ToLowerCase"           return 'resToLowerCase';
+"ToUpperCase"           return 'resToUpperCase';
+"Concat"                return 'resConcat';
+"new"                   return 'resnew';
 
 /* Espacios en blanco */
 [ \r\t\n]+                  {}
@@ -139,14 +145,13 @@ DEFTYPES
 ;
 
 ATTRIB
-     :ATTRIB coma id dospuntos TYPES { $$ = $1 + $2 + "\n    " + $3 + $4 + " " + $5; /*structures[structures.length - 1].atributes.push({name: $3, type: $5});*/ }
-     |id dospuntos TYPES { $$ = $1 + $2 + " " + $3; /*structures[structures.length - 1].atributes.push({name: $1, type: $3});*/ }
+     :ATTRIB coma id dospuntos TYPES { $$ = $1 + $2 + "\n    " + $3 + $4 + " " + $5; }
+     |id dospuntos TYPES { $$ = $1 + $2 + " " + $3; }
 ;
 
 INSTRUCTIONSG
-	: INSTRUCTIONG INSTRUCTIONSG { $$ = "\n" +$1 +  $2; /*inst global*/}
-	| INSTRUCTIONG { $$ = $1; /*inst global*/}
-     //| error { try{ errores.push( {error: yytext, type: 'SINTACTICO', line: @1.first_line, column: @1.first_column} ); }catch(e){ console.log(e); } }
+	: INSTRUCTIONG INSTRUCTIONSG { $$ = "\n" +$1 +  $2; }
+	| INSTRUCTIONG { $$ = $1; }
 ;
 
 INSTRUCTIONG
@@ -166,8 +171,8 @@ INSTRUCTIONG
 ;
 
 FUNCTIONG
-    : resfunction FIDG parenta LISTAPARAMETROS parentc RETURNT BLOCKF { $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5 + " " + $6 + " " + $7; if(local_function.length > 0){ for (let i = local_function.length -1 ; i > -1; i--) $$ += "\n" + local_function[i];} parent_name = ""; }
-    | resfunction FIDG parenta parentc RETURNT BLOCKF { $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5 + " " + $6 ; if(local_function.length > 0){ for (let entry of local_function) $$ += "\n" + entry;} parent_name = ""; }
+    : resfunction FIDG parenta LISTAPARAMETROS parentc RETURNT BLOCKF { $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5 + " " + $6 + " " ; for(let d of name_f){$7 = $7.split(d[0]+"(").join(d[1]+"(");} $$ += $7; if(local_function.length > 0){ for (let entry of local_function){ for(let d of name_f){entry = entry.split(d[0]+"(").join(d[1]+"(");} $$ += "\n" + entry;}} parent_name = ""; name_f = [];}
+    | resfunction FIDG parenta parentc RETURNT BLOCKF { $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5 + " "  ; for(let d of name_f){$6 = $6.split(d[0]+"(").join(d[1]+"(");} $$ += $6;  if(local_function.length > 0){ for (let entry of local_function){ for(let d of name_f){entry = entry.split(d[0]+"(").join(d[1]+"(");} $$ += "\n" + entry;}} parent_name = ""; name_f = [];}
 ;
 
 FIDG
@@ -175,8 +180,8 @@ FIDG
 ;
 
 FUNCTIONL
-    : resfunction FIDL parenta LISTAPARAMETROS parentc RETURNT BLOCKF { name_function = ""; for(let i = parent_name.indexOf($2); i > 0 ; i--){ name_function = "___" + parent_name[i] + name_function;} name_function =  parent_name[0] + name_function; $$ = ""; local_function.push($1 + " " + name_function + " " + $3 + " " + $4 + " " + $5 + " " + $6 + " " + $7); parent_name.pop();}
-    | resfunction FIDL parenta parentc RETURNT BLOCKF { name_function = ""; for(let i = parent_name.indexOf($2); i > 0 ; i--){ name_function = "___" + parent_name[i] + name_function;} name_function =  parent_name[0] + name_function; $$ = ""; local_function.push($1 + " " + $2 + " " + $3 + " " + $4 + " " + $5 + " " + $6); parent_name.pop();}
+    : resfunction FIDL parenta LISTAPARAMETROS parentc RETURNT BLOCKF { name_function = ""; for(let i = parent_name.indexOf($2); i > 0 ; i--){ name_function = "___" + parent_name[i] + name_function;} name_function =  parent_name[0] + name_function; $$ = ""; local_function.push($1 + " " + $2 + $3 + " " + $4 + " " + $5 + " " + $6 + " " + $7); parent_name.pop(); name_f.push([$2, name_function]);}
+    | resfunction FIDL parenta parentc RETURNT BLOCKF { name_function = ""; for(let i = parent_name.indexOf($2); i > 0 ; i--){ name_function = "___" + parent_name[i] + name_function;} name_function =  parent_name[0] + name_function; $$ = ""; local_function.push($1 + " " + $2 + $3 + " " + $4 + " " + $5 + " " + $6); parent_name.pop(); name_f.push([$2, name_function]);}
 ;
 
 FIDL
@@ -184,17 +189,17 @@ FIDL
 ;
 
 BLOCKF
-     : corchetea BLOCK2F { $$ = $1 + $2; }//INSTRUCTIONS corchetec
+     : corchetea BLOCK2F { $$ = $1 + $2; }
 ;
 
 BLOCK2F
-     : INSTRUCTIONSF corchetec { $1 = $1.replace(/\n/g, "\n    "); $$ = $1 +  "\n" + $2;  /*global*/}
+     : INSTRUCTIONSF corchetec { $1 = $1.replace(/\n/g, "\n    "); $$ = $1 +  "\n" + $2; }
      | corchetec { $$ = "\n" + $1;}
 ;
 
 INSTRUCTIONSF
-     : INSTRUCTIONF INSTRUCTIONSF { $$ = "\n" + $1 + $2; /*ins local*/}
-     | INSTRUCTIONF { $$ = "\n" + $1; /*ins local*/}
+     : INSTRUCTIONF INSTRUCTIONSF { $$ = "\n" + $1 + $2; }
+     | INSTRUCTIONF { $$ = "\n" + $1; }
 ;
 
 INSTRUCTIONF
@@ -255,7 +260,7 @@ TYPEVAR
 ;
 
 DECLARATION
-     : TYPEVAR LISTID { $$ = $1 + " " + aux_string; aux_string = "";  /* for(let  a of vars_a){a.type = $1;} declaracion*/}
+     : TYPEVAR LISTID { $$ = $1 + " " + aux_string; aux_string = ""; }
 ;
 
 LISTID
@@ -277,52 +282,25 @@ DECALPHA
      | coma id ASSVALUE{ $$ = $0; $$ += $1 + " " + $2 + " " + $3; vars_a.push({name: $2, type: "undefined", ambit: undefined, row: @1.first_line, column: @1.first_column});/*declaracion*/}
 ;
 
-/*
-
-LISTID
-     : LISTID coma id dospuntos TYPES ASSVALUE { $$ = $1 + $2 + " " + $3 + $4 + " " + $5 + $6;  simbol_table.push({name: $3, type: undefined, ambit: $5, row: @3.first_line, column: @3.first_column});}
-     | id dospuntos TYPES ASSVALUE { $$ = $1 + $2 + " " + $3 + " " + $4; simbol_table.push({name: $1, type: $3, ambit: undefined, row: @1.first_line, column: @1.first_column}); }
-     | LISTID coma id ASSVALUE { $$ = $1 + $2 + " " + $3 + " " + $4; simbol_table.push({name: $3, type: undefined, ambit: undefined, row: @3.first_line, column: @3.first_column}); }
-     | id ASSVALUE{ $$ = $1 + " " + $2; simbol_table.push({name: $1, type: undefined, ambit: undefined, row: @1.first_line, column: @1.first_column}); }
-;
-
-*/
-
 ASSVALUE
      : igual EXPRT { $$ = $1 + " " + $2; }
-     //| igual llavea llavec { $$ = $1 + " " + $2 + $3; }
-     //| igual llavea DATAPRINT llavec { $$ = $1 + " " + $2 + $3 + $4; }
      | igual DECASSTYPE { $$ = $1 + " " + $2; }
      | { $$ = ""; }
 ;
 
 BLOCK
-     : corchetea BLOCK2 { $$ = " " + $1 + $2;  }//INSTRUCTIONS corchetec
+     : corchetea BLOCK2 { $$ = " " + $1 + $2;  }
 ;
 
 BLOCK2
-     : INSTRUCTIONS corchetec { $1 = $1.replace(/\n/g, "\n    "); $$ = $1 + "\n" + $2; /*local*/}
+     : INSTRUCTIONS corchetec { $1 = $1.replace(/\n/g, "\n    "); $$ = $1 + "\n" + $2; }
      | corchetec { $$ = "\n" + $1;}
 ;
-
-/*
-INSTRUCTIONS
-     : INSTRUCTIONS INSTRUCTION { $2 = "\n" + $2; $$ =  $1 + $2; }
-     | INSTRUCTION { $$ = "\n" + $1; }
-;
-*/
 
 INSTRUCTIONS
      : INSTRUCTION INSTRUCTIONS { $$ = "\n" +  $1 + $2; /*local*/}
      | INSTRUCTION { $$ = "\n" +  $1; /*local*/}
 ;
-
-/*
-INSTRUCTIONPRIM
-     : INSTRUCTION INSTRUCTIONPRIM { $$ = "\n" + $1 + $2; }
-     | { $$ = ""; }
-;
-*/
 
 INSTRUCTION
      : DECLARATION puntocoma { $$ = $1 + $2; for(let  a of vars_a){ if(a.ambit === undefined) a.ambit = "local"; add_simbol_T(a); } vars_a = []; }
@@ -362,7 +340,6 @@ ASSIGMENTWITHTYPE
      : IDVALOR CONTENTASWT puntocoma{ $$ = $1 + $2 + $3; }
      | ASSIGNMENT puntocoma { $$ = $1 + $2; }
      | IDVALORASS puntocoma { $$ = $1 + $2; }
-     //| TERNARIO puntocoma{ $$ = $1 + $2;/*ternario*/}
 ;
 
 CONTENTASWT
@@ -375,12 +352,12 @@ DECASSTYPE
 ;
 
 ASSIGNMENTTYPE
-     : id dospuntos VALUETYPE ASSIGNMENTTYPEPRIM  { $$ = $1 + $2 +  " " + $3 + $4 ; /*revision2*/  }
+     : id dospuntos VALUETYPE ASSIGNMENTTYPEPRIM  { $$ = $1 + $2 +  " " + $3 + $4 ; }
 ;
 
 ASSIGNMENTTYPEPRIM
-     : coma id dospuntos VALUETYPE ASSIGNMENTTYPEPRIM  { $$ = $1 + "\n    " + $2 +  $3 + " " +$4 +  $5; /*revision1*/ }
-     | corchetec { $$ = "\n" + $1; /*revision3*/ }
+     : coma id dospuntos VALUETYPE ASSIGNMENTTYPEPRIM  { $$ = $1 + "\n    " + $2 +  $3 + " " +$4 +  $5; }
+     | corchetec { $$ = "\n" + $1; }
 ;
 
 VALUETYPE 
@@ -415,7 +392,6 @@ SWITCH
      : resswitch PARAMETROUNITARIO corchetea CASES DEFAULT corchetec {  $$ = $1 + " " + $2 + " " + $3 + "\n" + $4 + $5 + "\n" + $6; }
 ;
 
-//"<li><span class=\"caret\">EXPRESION</span>\n<ul class=\"nested\">\n" + $2 + "</ul>\n</li>"
 CASES
      : CASES rescase EXPRT dospuntos INSTRUCTIONS { $$ = $1 + " " + $2 + " " + $3 + "\n" + $4 + $5 + "\n"; }
      | CASES rescase EXPRT dospuntos { $$ = $1 + $2 + " " + $3 + $4; }
@@ -463,17 +439,17 @@ DECINC
 ;
 
 PRINT
-    : resprint parenta DATAPRINT parentc { $$ = $1 + $2 + $3 + $4; /*print*/}
+    : resprint parenta DATAPRINT parentc { $$ = $1 + $2 + $3 + $4; }
 ;
 
 DATAPRINT
-     : EXPRT coma DATAPRINT { $$ = $1 + $2 + " " + $3; /*print*/}
-     | EXPRT { $$ = $1; /*print*/}
+     : EXPRT coma DATAPRINT { $$ = $1 + $2 + " " + $3; }
+     | EXPRT { $$ = $1; }
 ;
 
 EXPRT
 	: EXPRT or EXPRT { $$ = $1 + " " + $2 + " " + $3; }
-     | EXPRT quest EXPRT dospuntos EXPRT { $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5; /*ternario*/}
+     | EXPRT quest EXPRT dospuntos EXPRT { $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5; }
      | EXPRT2 { $$ = $1; }
 ;
 
@@ -520,12 +496,10 @@ EXP2
 
 EXP3
      : number { $$ = $1; }
-     //| number ARREGLO { $$ = $1 +  $2; }
      | resta number { $$ = $1 + " " + $2; }
      | resta IDVALOR { $$ = $1 + " " + $2; }
      | parenta EXPRT parentc { $$ = $1 + " " + $2 + " " + $3; }
      | cadena { $$ = $1; }
-     //| cadena ARREGLO { $$ = $1 + $2; }
      | restrue { $$ = $1; }
      | resfalse { $$ = $1; }
      | CALLF { $$ = $1; }
@@ -535,6 +509,7 @@ EXP3
      | IDVALOR DECINC{ $$ = $1 + $2; }
      | llavea llavec { $$ = $1 + $2 ; }
      | llavea DATAPRINT llavec { $$ = $1 + $2 + $3; }
+     | resnew resarray parenta EXPRT parentc { $$ = $1 + " " + $2 + $3 + $4 + $5; }
 ;
 
 IDVALOR  
@@ -556,11 +531,15 @@ IDVALOR2
      : punto IDVALOR { $$ = $1 + $2; }
      | punto respop parenta parentc { $$ = $1 + $2 + $3 + $4; }
      | punto reslength { $$ = $1 + $2; }
+     | punto resCharAt parenta EXPRT parentc { $$ = $1 + $2 + $3 + $4; }
+     | punto resToLowerCase parenta parentc { $$ = $1 + $2 + $3 + $4; }
+     | punto resToUpperCase parenta parentc { $$ = $1 + $2 + $3 + $4; }
+     | punto resConcat parenta EXPRT parentc { $$ = $1 + $2 + $3 + $4 + $5; }
      | { $$ = ""; }
 ;
 
 CALLF
-     :id parenta PARAMETERS { $$ = $1 + $2 + $3; /*callf*/ }
+     :id parenta PARAMETERS { $$ = $1 + $2 + $3; }
 ;
 
 PARAMETERS

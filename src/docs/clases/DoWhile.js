@@ -11,14 +11,14 @@ class DoWhile {
         this.body = c;
     }
 
-    operate(tab) {
-        var count = new Count();
+    operate(tab, count) {
+        //var count = new Count();
         var init = count.getNextLabel();
-        count.putInstruction('##Iniciando el Do While');
+        count.putInstruction('//Iniciando el Do While');
         count.putInstruction(init + ':');
         count.pushInit(init);
         var s = new SymbolTable(tab);
-        var r = this.exp.operate(tab);
+        var r = this.exp.operate(tab, count);
         var l = count.getNextLabel();
         count.pushFinal(l);
         if (r === null) {
@@ -32,7 +32,7 @@ class DoWhile {
         
         for (var i = 0; i < this.body.length; i++) {
 
-            this.body[i].operate(s);
+            this.body[i].operate(s, count);
         }
 
         count.generateIf2(r.value,'==',0,l);

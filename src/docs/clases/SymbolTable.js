@@ -1,31 +1,59 @@
-import Type from './Type';
-import { add_error_E } from './Reports';
-
+import { add_error_E, add_simbol_E } from './Reports';
 class SymbolTable{
     
     constructor(_tsuper) {
         if (_tsuper !== null) {
             this.functions = _tsuper.functions;
-        }
+        }else
+            this.functions = [];
         this.symbols = [];
         this.tsuper = _tsuper;
+        this.types = undefined;
     }
 
-    SymbolTable(_tsuper) {
-        if (_tsuper !== null) {
-            this.functions = this.tsuper.functions;
+    add_types(types)
+    {
+        this.types = types;
+    }
+
+    find_type(value)
+    {   
+        let global;
+        let types;
+        if(this.tsuper === null)
+        {
+            global = null;
+            types = this.types;
+        }else
+            global = this.tsuper;
+        while(global !== null)
+        {
+            types = global.types;
+            global = global.tsuper;
         }
-        this.symbols = [];
-        this.functions = [];
-        this.tsuper = null;
+        for(let type of types)
+        {
+            if(type.name === value)
+                return type;
+        }
+        return null;
+    }
+
+    find_global()
+    {   
+        let global = this.tsuper;
+        let prev = this.tsuper;
+        while(global !== null)
+        {
+            prev = global;
+            global = global.tsuper;
+        }
+        return prev;
     }
 
     addSymbol(symb) {
-        if (!this.exists(symb.id)) {
-            this.symbols.push(symb);
-            return true;
-        }
-        return false;
+        this.symbols.push(symb);
+        return true;
     }
 
     addSymbolDirect(symb) {
@@ -34,7 +62,7 @@ class SymbolTable{
     }
 
     getSymbol(name) {
-        for (var i=0; i<this.symbols.length; i++) {
+        for (let i=0; i<this.symbols.length; i++) {
             if (name === this.symbols[i].id) {
                 return this.symbols[i];
             }
@@ -45,8 +73,29 @@ class SymbolTable{
         return null;
     }
 
+    getSymbol_dec(name) {
+        for (let i=0; i<this.symbols.length; i++) {
+            if (name === this.symbols[i].id) {
+                return this.symbols[i];
+            }
+        }
+        return null;
+    }
+
+    add_simbols_report()
+    {
+        //{name: $1, type: "undefined", ambit: undefined, row: @1.first_line, column: @1.first_column}
+        for (let i=0; i<this.symbols.length; i++) {
+            add_simbol_E({name: this.symbols[i].id, type: this.symbols[i].type, ambit: this.symbols[i].type_var, row: this.symbols[i].row, column: this.symbols[i].column});
+        }
+        if (this.tsuper !== null) {
+            return this.tsuper.getSymbol();
+        }
+        return null;
+    }
+
     exists(val) {
-        for (var i=0; i<this.symbols.length; i++) {
+        for (let i=0; i<this.symbols.length; i++) {
             if (this.symbols[i].id === val) {
                 return true;
             }
@@ -58,27 +107,24 @@ class SymbolTable{
     }
 
     existsDirect(val) {
-        for (var i=0; i<this.symbols.length; i++) {
+        for (let i=0; i<this.symbols.length; i++) {
             if (this.symbols[i].id === val) {
                 return true;
             }
         }
-//        if(tsuper !== null)
-//        {
-//            return tsuper.exists(val);
-//        }
         return false;
     }
 
-    unionTables(t) {
-        for (var s in t.symbols) {
-            this.addSymbol(s);
-        }
-    }
-
     addFunction(fun) {
+        let funciones = this.functions;
+        let aux = this.tsuper;
+        while (aux !== null) {
+            funciones = aux.functions; 
+            aux = aux.tsuper;
+        }
+
         if (!this.existsFunction(fun.id)) {
-            this.functions.push(fun);
+            funciones.push(fun);
             return true;
         } else {
             try{ add_error_E( {error: "Funcion: "+fun.id+", Ya Declarada.", type: 'SINTACTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
@@ -87,21 +133,36 @@ class SymbolTable{
     }
 
     getFunction(name) {
-        for (var f =0; f<this.functions.length; f++) {
-            if (name === this.functions[f].id) {
-                return this.functions[f];
+        let funciones = this.functions;
+        let aux = this.tsuper;
+        while (aux !== null) {
+            funciones = aux.functions; 
+            aux = aux.tsuper;
+        }
+
+        for (let f =0; f<funciones.length; f++) {
+            if (name === funciones[f].id) {
+                return funciones[f];
             }
         }
         return null;
     }
 
     existsFunction(val) {
-        for (var f = 0; f< this.functions.length; f++) {
-            if (this.functions[f].id === val) {
+        let funciones = this.functions;
+        let aux = this.tsuper;
+        while (aux !== null) {
+            funciones = aux.functions; 
+            aux = aux.tsuper;
+        }
+
+        for (let f = 0; f< funciones.length; f++) {
+            if (funciones[f].id === val) {
                 return true;
             }
         }
         return false;
     }
 }
+
 export default SymbolTable;

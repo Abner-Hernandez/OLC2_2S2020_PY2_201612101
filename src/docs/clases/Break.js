@@ -9,8 +9,8 @@ class Break{
         this.column = _column;
     }
 
-    operate(tab) {
-        var count = new Count();
+    operate(tab, count) {
+        //var count = new Count();
         if(count.getLengthFinal() > 0){
             count.putInstruction('goto '+count.getLastFinal()+';');
             return;

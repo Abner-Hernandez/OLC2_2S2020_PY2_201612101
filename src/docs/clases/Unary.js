@@ -10,9 +10,10 @@ class Unary{
         this.column = _col;
     }
 
-    operate(tab){
-        let count = new Count();
+    operate(tab, count){
+        //let count = new Count();
         var a = tab.getSymbol(this.id);
+        count.putInstruction("//Ejecutando el operador Unario")
         if(a === null){
             //error
             try{ add_error_E( {error: 'No se Encontrado una Operacion Valida.', type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
@@ -21,9 +22,9 @@ class Unary{
         var index = count.generateInstruction('P','+',a.pointer);
         var tag = count.getNextTemporal();
         if(a.type_ex === Type.GLOBAL){
-            count.putInstruction(tag+' = heap['+index+'];')
+            count.putInstruction(tag+' = heap[(int)'+index+'];')
         }else{
-            count.putInstruction(tag+' = stack['+index+'];')
+            count.putInstruction(tag+' = stack[(int)'+index+'];')
         }
         if(this.type === Type.INCREMENTO){
             count.putInstruction(tag+' = '+tag+' + 1;')
@@ -32,9 +33,9 @@ class Unary{
         }
         
         if(a.type_ex === Type.GLOBAL){
-            count.putInstruction('heap['+index+'] = '+tag+';')
+            count.putInstruction('heap[(int)'+index+'] = '+tag+';')
         }else{
-            count.putInstruction('stack['+index+'] = '+tag+';')
+            count.putInstruction('stack[(int)'+index+'] = '+tag+';')
         }
         
         return null;

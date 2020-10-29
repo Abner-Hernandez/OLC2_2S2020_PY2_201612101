@@ -12,16 +12,16 @@ class Relational {
         this.column = _column;
     }
 
-    operate(tab){
-        var count = new Count();
+    operate(tab, count){
+        //var count = new Count();
         var tempL = null;
         var tempR = null;
         if (this.node_right !== null) {
-            tempR = this.node_right.operate(tab);
+            tempR = this.node_right.operate(tab, count);
         }
 
         if (this.node_left !== null) {
-            tempL = this.node_left.operate(tab);
+            tempL = this.node_left.operate(tab, count);
         }
 
         if (tempR !== null && tempL !== null) {
@@ -30,13 +30,13 @@ class Relational {
                     if (this.type === Type.IDENTICO) {
                         //return new Value(tempL.value === tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
                         //return new Value(count.generateInstruction(tempL.value,'==', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
-                        //return new Value(count.generateIf(tempL.value,'<>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
+                        //return new Value(count.generateIf(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                         return new Value(count.operateRelational(tempL.value,'==', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.DIFERENTE) {
                         //return new Value(tempL.value !== tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
-                        //return new Value(count.generateInstruction(tempL.value,'<>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
+                        //return new Value(count.generateInstruction(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                         //return new Value(count.generateIf(tempL.value,'==', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
-                        return new Value(count.operateRelational(tempL.value,'<>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
+                        return new Value(count.operateRelational(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.MAYOR) {
                         //return new Value(tempL.value > tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
                         //return new Value(count.generateInstruction(tempL.value,'>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
@@ -64,7 +64,7 @@ class Relational {
                         return new Value(count.operateRelational(tempL.value,'==', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.DIFERENTE) {
                         //return new Value(tempL.value !== tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
-                        return new Value(count.operateRelational(tempL.value,'<>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
+                        return new Value(count.operateRelational(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.MAYOR) {
                         //return new Value(tempL.value > tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
                         return new Value(count.operateRelational(tempL.value,'>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
@@ -84,7 +84,7 @@ class Relational {
                         return new Value(count.operateRelational(tempL.value,'==', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.DIFERENTE) {
                         //return new Value(tempL.value !== tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
-                        return new Value(count.operateRelational(tempL.value,'<>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
+                        return new Value(count.operateRelational(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.MAYOR) {
                         //return new Value(tempL.value > tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
                         return new Value(count.operateRelational(tempL.value,'>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
@@ -104,7 +104,7 @@ class Relational {
                         return new Value(count.operateRelational(tempL.value,'==', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.DIFERENTE) {
                         //return new Value(tempL.value !== tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
-                        return new Value(count.operateRelational(tempL.value,'<>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
+                        return new Value(count.operateRelational(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.MAYOR) {
                         //return new Value(tempL.value > tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
                         return new Value(count.operateRelational(tempL.value,'>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
@@ -124,7 +124,7 @@ class Relational {
                         return new Value(count.operateRelational(tempL.value,'==', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.DIFERENTE) {
                         //return new Value(tempL.value !== tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
-                        return new Value(count.operateRelational(tempL.value,'<>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
+                        return new Value(count.operateRelational(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.MAYOR) {
                         //return new Value(tempL.value > tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
                         return new Value(count.operateRelational(tempL.value,'>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
@@ -144,7 +144,7 @@ class Relational {
                         return new Value(count.operateRelational(tempL.value,'==', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.DIFERENTE) {
                         //return new Value(tempL.value !== tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
-                        return new Value(count.operateRelational(tempL.value,'<>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
+                        return new Value(count.operateRelational(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.MAYOR) {
                         //return new Value(tempL.value > tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
                         return new Value(count.operateRelational(tempL.value,'>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
@@ -164,7 +164,7 @@ class Relational {
                         return new Value(count.operateRelational(tempL.value,'==', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.DIFERENTE) {
                         //return new Value(tempL.value !== tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
-                        return new Value(count.operateRelational(tempL.value,'<>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
+                        return new Value(count.operateRelational(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.MAYOR) {
                         //return new Value(tempL.value > tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
                         return new Value(count.operateRelational(tempL.value,'>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
@@ -184,7 +184,7 @@ class Relational {
                         return new Value(count.operateRelational(tempL.value,'==', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.DIFERENTE) {
                         //return new Value(tempL.value !== tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
-                        return new Value(count.operateRelational(tempL.value,'<>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
+                        return new Value(count.operateRelational(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.MAYOR) {
                         //return new Value(tempL.value > tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
                         return new Value(count.operateRelational(tempL.value,'>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
@@ -204,7 +204,7 @@ class Relational {
                         return new Value(count.operateRelational(tempL.value,'==', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.DIFERENTE) {
                         //return new Value(tempL.value !== tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
-                        return new Value(count.operateRelational(tempL.value,'<>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
+                        return new Value(count.operateRelational(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.MAYOR) {
                         //return new Value(tempL.value > tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
                         return new Value(count.operateRelational(tempL.value,'>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
@@ -224,7 +224,7 @@ class Relational {
                         return new Value(count.operateRelational(tempL.value,'==', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.DIFERENTE) {
                         //return new Value(tempL.value !== tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
-                        return new Value(count.operateRelational(tempL.value,'<>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
+                        return new Value(count.operateRelational(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.REFERECIA) {
                         //return new Value(tempL.value > tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
                         return new Value(count.operateRelational(tempL.value,'>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
@@ -235,7 +235,7 @@ class Relational {
                         return new Value(count.operateRelational(tempL.value, '==', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     } else if (this.type === Type.DIFERENTE) {
                         //return new Value(count.generateInstruction(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
-                        return new Value(count.operateRelational(tempL.value,'<>', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
+                        return new Value(count.operateRelational(tempL.value,'!=', tempR.value), Type.BOOL, Type.VALOR, this.row, this.column);
                     }
                 }
             }

@@ -11,19 +11,19 @@ class TernaryOperator {
         this.column = _column;
     }
 
-    operate(tab) 
+    operate(tab, count) 
     {
-        let aux = this.value.operate(tab);
+        let aux = this.value.operate(tab, count);
         if (aux.type === Type.BOOL) {
             if (aux.value) {
-                let ret = this.node_left.operate(tab);
+                let ret = this.node_left.operate(tab, count);
                 if (ret === null) {
                     try{ add_error_E( {error: "El Valor Retorno INVAVALIDO, se esperaba un VALOR.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                 }
                 return ret;
 
             } else {
-                let ret = this.node_right.operate(tab);
+                let ret = this.node_right.operate(tab, count);
                 if (ret === null) {
                     try{ add_error_E( {error: "El Valor de la columna INVAVALIDO, se esperaba un ENTERO.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                 }
