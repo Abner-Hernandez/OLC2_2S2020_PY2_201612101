@@ -87,10 +87,24 @@ performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* actio
 var $0 = $$.length - 1;
 switch (yystate) {
 case 1:
-var tab = new InstructionTab(); this.$ = $$[$0-3]; this.$ = this.$.concat($$[$0-2]); tab.instructions = this.$; return tab.operateBlock();
+
+          var tab = new InstructionTab();
+          this.$ = $$[$0-3];
+          this.$ = this.$.concat($$[$0-2]);
+          this.$ = this.$.concat($$[$0-1]);
+          console.log($$[$0-3])
+          tab.instructions = this.$;
+          //return tab.operateBlock();
+          //tab.operate()
+          console.log(tab.operate());
+          console.log(tab.Roptimize);
+     
 break;
 case 2:
 var tab = new InstructionTab(); tab.instructions = []; return tab.operateBlock();
+break;
+case 3:
+ this.$ = [new Instruction($$[$0],null,null,null,Type.IMPORT,0,this._$.first_line,this._$.first_column)]; 
 break;
 case 4: case 15:
 this.$ = $$[$0-1]; this.$ = this.$.concat($$[$0]);
@@ -114,10 +128,10 @@ case 10:
 this.$ = [new Instruction($$[$0-3],null,$$[$0-1],null,Type.DECLARATION,3,this._$.first_line,this._$.first_column)];
 break;
 case 11:
-this.$ = [new Instruction(Type.STACK,null,'[',']',Type.DECLARATION,4,this._$.first_line,this._$.first_column)];
+this.$ = [new Instruction(Type.STACK,$$[$0-2],'[',']',Type.DECLARATION,4,this._$.first_line,this._$.first_column)];
 break;
 case 12:
-this.$ = [new Instruction(Type.HEAP,null,'[',']',Type.DECLARATION,5,this._$.first_line,this._$.first_column)];
+this.$ = [new Instruction(Type.HEAP,$$[$0-2],'[',']',Type.DECLARATION,5,this._$.first_line,this._$.first_column)];
 break;
 case 14:
 this.$ = [];
@@ -159,16 +173,22 @@ case 37:
 this.$ = [new Instruction($$[$0-1],$$[$0-4].op,$$[$0-4].left,$$[$0-4].right,Type.IF,0,this._$.first_line,this._$.first_column)];
 break;
 case 38:
-this.$ = [new Instruction(null,null,$$[$0-4],$$[$0-2],Type.PRINT,0,this._$.first_line,this._$.first_column)];
+this.$ = [new Instruction(null,null,$$[$0-4],$$[$0-2],Type.PRINT,1,this._$.first_line,this._$.first_column)];
 break;
 case 39:
-this.$ = [new Instruction(null,null,$$[$0-7],$$[$0-2],Type.PRINT,0,this._$.first_line,this._$.first_column)];
+this.$ = [new Instruction(null,null,$$[$0-7],$$[$0-2],Type.PRINT,2,this._$.first_line,this._$.first_column)];
 break;
 case 40:
-this.$ = [new Instruction($$[$0-5],null,null,null,Type.PROC,0,this._$.first_line,this._$.first_column)]; this.$ = this.$.concat($$[$0-1]); this.$.push(new Instruction('end',null,null,null,Type.END,this._$.first_line,this._$.first_column))
+this.$ = [new Instruction($$[$0-5],$$[$0-6],null,null,Type.PROC,0,this._$.first_line,this._$.first_column)]; this.$ = this.$.concat($$[$0-1]); this.$.push(new Instruction('end',null,null,null,Type.END,this._$.first_line,this._$.first_column))
 break;
 case 43:
 this.$ = [new Instruction($$[$0-3],null,null,null,Type.CALL,0,this._$.first_line,this._$.first_column)];
+break;
+case 44:
+this.$ = [new Instruction(null,null,null,null,Type.RETURN,1,this._$.first_line,this._$.first_column)];
+break;
+case 45:
+this.$ = [new Instruction($$[$0-1],null,null,null,Type.RETURN,2,this._$.first_line,this._$.first_column)];
 break;
 case 46: case 47: case 48: case 49: case 50: case 51: case 52: case 53: case 54: case 55: case 56:
 this.$ = {left: $$[$0-2], op: $$[$0-1], right: $$[$0]};

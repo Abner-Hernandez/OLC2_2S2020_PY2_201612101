@@ -52,7 +52,7 @@ class Assignment {
                                     //obteniendo el valor del arreglo
                                     let puntero = count.getNextTemporal();
                                     count.putInstruction(puntero + ' = '+ r.tag + ';')
-
+                                    let start = true;
 
                                     for(let p of this.id[i].positions)
                                     {
@@ -67,18 +67,29 @@ class Assignment {
                                         count.putInstruction('//Insertando los parametros de llamada. Posicion 0');
                                         let tag2 = count.paramFunc(Type.LOCAL, count.getRelative())
                                         count.putInstruction('stack[(int)' + tag2 + '] = 0.0;');
-                            
-                                        count.putInstruction('//Insertando los parametros de llamada. Posicion 1'); // debe ser el numero de elementos que tiene el arreglo
-                                        count.putInstruction(t + ' = '+ tag2 + ' + 1;')
-                                        count.putInstruction(t2 + ' = heap[(int)' + puntero + '];')
-                                        count.putInstruction('stack[(int)' + t + '] = '+ t2 +';');
-                            
+
+                                        if(start)
+                                        {
+                                            count.putInstruction('//Insertando 1er. parametro: # elementos del arreglo'); // debe ser el numero de elementos que tiene el arreglo
+                                            count.putInstruction(t + ' = '+ tag2 + ' + 1;')
+                                            count.putInstruction(t2 + ' = heap[(int)' + puntero + '];')
+                                            count.putInstruction('stack[(int)' + t + '] = '+ t2 +';');
+                                            start = false;
+                                        }
+                                        else
+                                        {
+                                            count.putInstruction('//Insertando 1er. parametro: # elementos del arreglo'); // debe ser el numero de elementos que tiene el arreglo
+                                            count.putInstruction(t + ' = '+ tag2 + ' + 1;')
+                                            count.putInstruction(puntero + ' = heap[(int)' + puntero + '];')
+                                            count.putInstruction(t2 + ' = heap[(int)' + puntero + '];')
+                                            count.putInstruction('stack[(int)' + t + '] = '+ t2 +';');
+                                        }
                                         
-                                        count.putInstruction('//Insertando los parametros de llamada. Posicion 2'); // debe ser el acceso al arreglo
+                                        count.putInstruction('//Insertando 2do. parametro: # posicion acceder'); // debe ser el acceso al arreglo
                                         count.putInstruction(t5 + ' = '+ t + ' + 1;')
                                         count.putInstruction('stack[(int)' + t5 + '] = '+ position.value +';');
 
-                                        count.putInstruction('//Insertando los parametros de llamada. Posicion 3'); // debe ser donde comienza los punteros a los elementos
+                                        count.putInstruction('//Insertando 3er. parametro: inicio de punteros elementos'); // debe ser donde comienza los punteros a los elementos
                                         count.putInstruction(t6 + ' = '+ puntero + ' + 1;')
                                         count.putInstruction(t8 + ' = '+ t5 + ' + 1;')
                                         count.putInstruction('stack[(int)' + t8 + '] = '+ t6 +';');
@@ -87,15 +98,15 @@ class Assignment {
                                         count.putInstruction('P = P + ' + tt + ';');
                                         count.putInstruction('//Insertando la llama a la Funcion get_value_arr_3d_c');
                                         count.putInstruction('get_value_arr_3d_c();');
-                            
+
                                         count.putInstruction('//Verificando si existe retorno.');
-                                        var tag = count.getNextTemporal();
+                                        let tag = count.getNextTemporal();
                                         let tag2r = count.getNextTemporal();
                                         count.putInstruction(tag + ' = P + 0;')
                                         count.putInstruction(tag2r + ' = stack[(int)' + tag + '];')
                                         count.putInstruction('P = P - ' + tt + ';');
                                         count.putInstruction(puntero + ' = '+ tag2r +';');
-                        
+
                                         j++;
                                         dimArr--;
                                     }
@@ -108,7 +119,9 @@ class Assignment {
                             }else
                             {
                                 //se retorna el arreglo
-                                aux_return = r;
+                                let aux = new Value(r.tag, r.type, Type.ARREGLO, r.row, r.column);
+                                aux.nDimension = r.nDimension;
+                                aux_return = aux;
                             }
                         }else if(r.type !== Type.ENTERO && r.type !== Type.BOOL && r.type !== Type.CADENA)
                         {
@@ -130,16 +143,16 @@ class Assignment {
                                         let tag2 = count.paramFunc(Type.LOCAL, count.getRelative())
                                         count.putInstruction('stack[(int)' + tag2 + '] = 0.0;');
                             
-                                        count.putInstruction('//Insertando los parametros de llamada. Posicion 1'); // debe ser el numero de elementos que tiene el arreglo
+                                        count.putInstruction('//Insertando 1er. parametro: # de atributos objeto'); // debe ser el numero de elementos que tiene el arreglo
                                         count.putInstruction(t + ' = '+ tag2 + ' + 1;')
                                         count.putInstruction('stack[(int)' + t + '] = '+ type.atributes.length +';');
                             
                                         
-                                        count.putInstruction('//Insertando los parametros de llamada. Posicion 2'); // debe ser el acceso al arreglo
+                                        count.putInstruction('//Insertando 2do. parametro: # del atributo'); // debe ser el acceso al arreglo
                                         count.putInstruction(t5 + ' = '+ t + ' + 1;')
                                         count.putInstruction('stack[(int)' + t5 + '] = '+ position +';');
 
-                                        count.putInstruction('//Insertando los parametros de llamada. Posicion 3'); // debe ser donde comienza los punteros a los elementos
+                                        count.putInstruction('//Insertando 3er. parametro: inicio de punteros elementos'); // debe ser donde comienza los punteros a los elementos
                                         count.putInstruction(t8 + ' = '+ t5 + ' + 1;')
                                         count.putInstruction('stack[(int)' + t8 + '] = '+ r.tag +';');
                                             
@@ -149,22 +162,22 @@ class Assignment {
                                         count.putInstruction('get_value_arr_3d_c();');
                             
                                         count.putInstruction('//Verificando si existe retorno.');
-                                        var tag = count.getNextTemporal();
+                                        let tag = count.getNextTemporal();
                                         let tag2r = count.getNextTemporal();
                                         count.putInstruction(tag + ' = P + 0;')
                                         count.putInstruction(tag2r + ' = stack[(int)' + tag + '];')
                                         count.putInstruction('P = P - ' + tt + ';');
                                         if(r.type_exp !== Type.ARREGLO)
-                                            aux_return = new Value(tag2r, da.type, Type.VALOR, r.row, r.column);
+                                            aux_return = new Value(tag2r, r.type, Type.VALOR, r.row, r.column);
                                         else
-                                            aux_return = new Value(tag2r, da.type, Type.ARREGLO, r.row, r.column);
+                                            aux_return = new Value(tag2r, r.type, Type.ARREGLO, r.row, r.column);
                                         break;
                                     }
                                 }
                             }
                         }else if(r.type === Type.CADENA)
                         {
-                            aux_return = r;
+                            aux_return = new Value(r.tag, r.type, r.type_exp, r.row, r.column);
                         }
                     } else {
                         try{ add_error_E( {error: "El atributo / posicion arrego: " + this.id.toString() + "no a sido encontrada", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
@@ -174,10 +187,10 @@ class Assignment {
                 {
                     try
                     {
-                        if(aux_return !== null)
+                        if(r !== null)
                         {
-                            let type = tab.find_type(aux_return.type);
-                            if(type !== null)
+                            let type = tab.find_type(r.type);
+                            if(type !== null && aux_return !== null)
                             {
                                 for(let da of type.atributes)
                                 {
@@ -193,16 +206,16 @@ class Assignment {
                                         let tag2 = count.paramFunc(Type.LOCAL, count.getRelative())
                                         count.putInstruction('stack[(int)' + tag2 + '] = 0.0;');
                             
-                                        count.putInstruction('//Insertando los parametros de llamada. Posicion 1'); // debe ser el numero de elementos que tiene el arreglo
+                                        count.putInstruction('//Insertando 1er. parametro: # de atributos objeto'); // debe ser el numero de elementos que tiene el arreglo
                                         count.putInstruction(t + ' = '+ tag2 + ' + 1;')
                                         count.putInstruction('stack[(int)' + t + '] = '+ type.atributes.length +';');
                             
                                         
-                                        count.putInstruction('//Insertando los parametros de llamada. Posicion 2'); // debe ser el acceso al arreglo
+                                        count.putInstruction('//Insertando 2do. parametro: # del atributo'); // debe ser el acceso al arreglo
                                         count.putInstruction(t5 + ' = '+ t + ' + 1;')
                                         count.putInstruction('stack[(int)' + t5 + '] = '+ position +';');
 
-                                        count.putInstruction('//Insertando los parametros de llamada. Posicion 3'); // debe ser donde comienza los punteros a los elementos
+                                        count.putInstruction('//Insertando 3er. parametro: inicio de punteros elementos'); // debe ser donde comienza los punteros a los elementos
                                         count.putInstruction(t8 + ' = '+ t5 + ' + 1;')
                                         count.putInstruction('stack[(int)' + t8 + '] = '+ aux_return.value +';');
                                             
@@ -212,15 +225,15 @@ class Assignment {
                                         count.putInstruction('get_value_arr_3d_c();');
                             
                                         count.putInstruction('//Verificando si existe retorno.');
-                                        var tag = count.getNextTemporal();
+                                        let tag = count.getNextTemporal();
                                         let tag2r = count.getNextTemporal();
                                         count.putInstruction(tag + ' = P + 0;')
                                         count.putInstruction(tag2r + ' = stack[(int)' + tag + '];')
                                         count.putInstruction('P = P - ' + tt + ';');
                                         if(r.type_exp !== Type.ARREGLO)
-                                            aux_return = new Value(tag2r, da.type, Type.VALOR, r.row, r.column);
+                                            aux_return = new Value(tag2r, r.type, Type.VALOR, r.row, r.column);
                                         else
-                                            aux_return = new Value(tag2r, da.type, Type.ARREGLO, r.row, r.column);
+                                            aux_return = new Value(tag2r, r.type, Type.ARREGLO, r.row, r.column);
                                         break;
                                     }
                                 }
@@ -252,7 +265,7 @@ class Assignment {
                             if (tmpExp !== null && tmpExp.type === aux_return.type) 
                             {
                                 //realizar la asignacion 
-                                count.putInstruction('//Reasignando ');
+                                count.putInstruction('//Reasignando variable');
                                 count.putInstruction('heap[(int)' + aux_return.value + '] = ' + tmpExp.value + ';');
                             }
                         }
@@ -264,8 +277,26 @@ class Assignment {
                     if (tmpExp !== null && (tmpExp.type === aux_return.type || tmpExp.type === Type.NULL) && dimArr === tmpExp.nDimension) 
                     {
                         //realizar la asignacion 
-                        count.putInstruction('//Reasignando ');
-                        count.putInstruction('heap[(int)' + aux_return.value + '] = ' + tmpExp.value + ';');
+                        count.putInstruction('//Reasignando variable');
+
+                        if(this.value.type === Type.ENTERO && this.value.type_exp === Type.VALOR)
+                        {
+                            count.putInstruction(aux_return.value + ' = heap[(int)' + aux_return.value + '];');
+                            count.putInstruction('heap[(int)' + aux_return.value + '] = ' + tmpExp.value + ';');
+                        }else
+                            count.putInstruction('heap[(int)' + aux_return.value + '] = ' + tmpExp.value + ';');
+                    }else if (tmpExp !== null && (r.type === Type.NULL) && dimArr === tmpExp.nDimension) 
+                    {
+                        //realizar la asignacion 
+                        count.putInstruction('//Reasignando variable');
+
+                        if(this.value.type === Type.ENTERO && this.value.type_exp === Type.VALOR)
+                        {
+                            count.putInstruction(aux_return.value + ' = heap[(int)' + aux_return.value + '];');
+                            count.putInstruction('heap[(int)' + aux_return.value + '] = ' + tmpExp.value + ';');
+                        }else
+                            count.putInstruction('heap[(int)' + aux_return.value + '] = ' + tmpExp.value + ';');
+                        r.type = tmpExp.type;
                     }
 
                 }
@@ -295,16 +326,39 @@ class Assignment {
                     if (this.checkType(tmpExp, a.type, count)) {
                         return null;
                     }
-    
-                    a.type_exp = tmpExp.type_exp;
-                    a.type = tmpExp.type;
-                    var t = count.getNextTemporal();
-                    if (a.type_var === Type.GLOBAL) {
-                        count.putInstruction('heap[(int)' + a.tag + '] = ' + tmpExp.value + ';');
-                    } else {
-                        count.putInstruction(t + ' = P + ' + a.pointer + ';');
-                        count.putInstruction('stack[(int)' + t + '] = ' + tmpExp.value + ';');
+                    if(a.type_exp === Type.ARREGLO)
+                    {
+                        if(a.nDimension === tmpExp.nDimension)
+                        {
+                            a.type_exp = tmpExp.type_exp;
+                            a.type = tmpExp.type;
+                            var t = count.getNextTemporal();
+                            if (a.type_var === Type.GLOBAL) {
+                                count.putInstruction('heap[(int)' + a.tag + '] = ' + tmpExp.value + ';');
+                            } else {
+                                count.putInstruction(t + ' = P + ' + a.pointer + ';');
+                                count.putInstruction('stack[(int)' + t + '] = ' + tmpExp.value + ';');
+                            }
+
+                        }
+                        else {
+                            try{ add_error_E( {error: "Hubo un error al realizar la asignacion de la variable " + this.id/*[0]*/ + " se quiere asignar un arreglo de tamaño mayor.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
+                            return null;
+                        }
+                    }else
+                    {
+                        a.type_exp = tmpExp.type_exp;
+                        a.type = tmpExp.type;
+                        var t = count.getNextTemporal();
+                        if (a.type_var === Type.GLOBAL) {
+                            count.putInstruction('heap[(int)' + a.tag + '] = ' + tmpExp.value + ';');
+                        } else {
+                            count.putInstruction(t + ' = P + ' + a.pointer + ';');
+                            count.putInstruction('stack[(int)' + t + '] = ' + tmpExp.value + ';');
+                        }
                     }
+                    
+
                 }
             } else {
                 try{ add_error_E( {error: "Hubo un error al realizar la asignacion de la variable " + this.id/*[0]*/ + ".", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }

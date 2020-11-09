@@ -22,7 +22,21 @@ class Print {
         }
 
         if (e !== null) {
-            if (Type.VALOR === e.type_exp && e.type !== Type.CADENA) {
+            if(e.type_exp === Type.ARREGLO)
+            {
+                if(e.nDimension === 0)
+                {
+                    count.putInstruction('//Obteniendo el valor del arreglo')
+                    count.putInstruction(e.value + ' = heap[(int)' + e.value + '];')
+                    e.type_exp = Type.VALOR;
+                }
+                else
+                {
+                    try{ add_error_E( {error: 'No se puede imprimir un arreglo', type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
+                }
+            }
+
+            if (Type.VALOR === e.type_exp && (e.type === Type.ENTERO || e.type === Type.DECIMAL || e.type === Type.CARACTER || e.type === Type.BOOL)) {
                 var type = '';
                 var cast = '';
                 switch (e.type) {
@@ -56,15 +70,12 @@ class Print {
                         count.putInstruction(l2+':');
                         count.putInstruction('printf("%c",' + 10 + ');');
                         return null;
-                    case Type.CADENA:
-                        type = '%i'
-                        break;
                     default:
                         try{ add_error_E( {error: 'Operacion ' + e.type + ' imposible de realizar con la funcion print.', type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                 }
                 count.putInstruction('printf("' + type + '",' + cast + " " + e.value + ');');
                 count.putInstruction('printf("%c",' + 10 + ');');
-            } else if(e.type === Type.CADENA) {
+            } else if( Type.VALOR === e.type_exp && e.type === Type.CADENA) {
                 let t = count.getNextTemporal();
                 count.putInstruction('//Insertando los parametros de llamada. Posicion 1');
                 count.putInstruction('');

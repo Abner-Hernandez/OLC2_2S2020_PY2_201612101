@@ -211,8 +211,14 @@ class Declaration {
                                     let tag = count.generateDeclaration(Type.GLOBAL, temp.value, r)
                                     //tab.addSymbolDirect(new Symbol(0, temp.type, temp.type_exp, this.type_var, this.type_c, /*this.type_o,*/ at2.name/*[i]*/, r, tag));
                                     //count.putSymbol(0, temp.type, temp.type_exp, this.type_var, this.type_c, /*this.type_o,*/ at2.name/*[i]*/, r, tag);
+                                    /*
+                                    if(temp.type === Type.CADENA)
+                                    {
+                                        count.putInstruction('//Guardando el puntero de la cadena al arreglo')
+                                        count.putInstruction(tag + ' = heap[(int)' + tag + '];')
+                                    }
+                                    */
                                     pointer.push([at2.number,at2.type, at2.name, tag]);
-                                    break;
                                 } else {
                                     //tab.addSymbolDirect(new Symbol(0, Type.NULL, Type.VALOR, this.type_var, this.type_c, at2.name, r, null));
                                     let tag = count.generateDeclaration(Type.GLOBAL, 0, r)
@@ -220,18 +226,21 @@ class Declaration {
                                     //tab.addSymbolDirect(new Symbol(0, Type.NULL, Type.VALOR, this.type_var, this.type_c, this.id, r, tag));
                                     //count.putSymbol(0, Type.NULL, Type.VALOR, this.type_var, this.type_c, at2.name, r, "null");
                                 }
+                                break;
                             }else
                             {
+                                /*
                                 let temp = at[1].operate(tab, count);
                                 if((temp === null || temp.type !== at2.type) && (this.type === Type.DECIMAL || this.type === Type.ENTERO || this.type === Type.BOOL || this.type === Type.CADENA) )
                                 {
                                     try{ add_error_E( {error: "El atributo no es del tipo correcto: " + temp.type + "con el del type: " + at2.type, type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                                     return null;
                                 }
+                                */
                                 
                                 if (at[1].value !== null)
                                 {                                    
-                                    count.putInstruction('//Declarando el atributo ' + at2.name + ' Objeto: ' + '\n'); 
+                                    count.putInstruction('//Declarando el atributo ' + at2.name + ' Objeto: ' + at2.type); 
                                     let p = this.assign_recursive_type(at2.type, at[1].value, tab, count)
                                     if(p === null)
                                     {
@@ -244,19 +253,11 @@ class Declaration {
                                 else
                                 {
                                     let r = count.getRelativePlus();
-                                    if(temp != null && this.type != undefined && temp.type !== Type.NULL){
-                                        count.putInstruction('//Declarando el atributo ' + at2.name); //[i]);
-                                        let tag = count.generateDeclaration(Type.GLOBAL, temp.value, r)
-                                        //tab.addSymbolDirect(new Symbol(0, temp.type, temp.type_exp, this.type_var, this.type_c, /*this.type_o,*/ at2.name/*[i]*/, r, tag));
-                                        //count.putSymbol(0, temp.type, temp.type_exp, this.type_var, this.type_c, /*this.type_o,*/ at2.name/*[i]*/, r, tag);
-                                        pointer.push([at2.number,at2.type, at2.name, tag]);
-                                    } else {
-                                        //tab.addSymbolDirect(new Symbol(0, Type.NULL, Type.VALOR, this.type_var, this.type_c, at2.name, r, null));
-                                        let tag = count.generateDeclaration(Type.GLOBAL, 0, r)
-                                        pointer.push([at2.number,at2.type, at2.name, tag]);
-                                        //count.putSymbol(0, Type.NULL, Type.VALOR, this.type_var, this.type_c, at2.name, r, "null");
-                                    }
+                                    let tag = count.generateDeclaration(Type.GLOBAL, 0, r)
+                                    pointer.push([at2.number,at2.type, at2.name, tag]);
+                                    //count.putSymbol(0, Type.NULL, Type.VALOR, this.type_var, this.type_c, at2.name, r, "null");
                                 }
+                                break;
                             }
                         }
                     }

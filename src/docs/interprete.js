@@ -1151,16 +1151,16 @@ _handle_error:
           let tago1llnarr = count.getNextLabel();
           count.putInstruction(punt2narr+' = stack[(int)'+ tag1narr + '];');
 
-          count.putInstruction(cnarr + ' = 1;');
+          count.putInstruction(cnarr + ' = 0;');
           
           let tta = count.getNextTemporal();
           count.putInstruction(tta + ' = H;');
           count.putInstruction('H = H + 1;');
-          count.putInstruction('heap[(int)' + tta + '] = 0;')
+          count.putInstruction('heap[(int)' + tta + '] = '+punt2narr+';')
 
           count.putInstruction(taglnarr + ':');
 
-          count.generateIf2(cnarr,'>',punt2narr,tagolnarr);
+          count.generateIf2(cnarr,'<=',punt2narr,tagolnarr);
           let tnarr = count.getNextTemporal();
           count.putInstruction(tnarr + ' = H;');
           count.putInstruction('H = H + 1;');
@@ -1170,7 +1170,7 @@ _handle_error:
           count.putInstruction('goto '+taglnarr+';');
 
           count.putInstruction(tagolnarr + ':');
-          count.putInstruction('stack[(int)' + tagnarr + '] = ' + t + ';');
+          count.putInstruction('stack[(int)' + tagnarr + '] = ' + tta + ';');
           count.putInstruction('return;\n}\n');
 
           count.resetRelative();

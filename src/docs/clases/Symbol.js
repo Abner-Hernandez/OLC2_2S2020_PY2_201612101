@@ -11,7 +11,7 @@ class Symbol {
         this.pointer = _pointer
         this.tag = _tag;
         this.arrayInfo = null;
-        this.nDimension = -1;
+        this.nDimension = 0;
     }
 }
 export default Symbol;

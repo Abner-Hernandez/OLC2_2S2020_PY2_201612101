@@ -14,6 +14,8 @@ const Type = {
     END: 'END',
     NUMBER: 'NUMBER',
     NULL: 'NULL',
-    ID: 'ID'
+    ID: 'ID',
+    RETURN: 'RETURN',
+    IMPORT: 'IMPORT'
 };
 export default Type;

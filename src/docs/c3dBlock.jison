@@ -97,12 +97,23 @@
 %% /* Definición de la gramática */
 
 ini
-     : IMPORT DECLA INSTRUCTIONS EOF {var tab = new InstructionTab(); $$ = $1; $$ = $$.concat($2); tab.instructions = $$; return tab.operateBlock();}
+     : IMPORT DECLA INSTRUCTIONS EOF {
+          var tab = new InstructionTab();
+          $$ = $1;
+          $$ = $$.concat($2);
+          $$ = $$.concat($3);
+          console.log($1)
+          tab.instructions = $$;
+          //return tab.operateBlock();
+          //tab.operate()
+          console.log(tab.operate());
+          console.log(tab.Roptimize);
+     }
      | EOF {var tab = new InstructionTab(); tab.instructions = []; return tab.operateBlock();}
 ;
 
 IMPORT
-     : resinclude1 
+     : resinclude1 { $$ = [new Instruction($1,null,null,null,Type.IMPORT,0,this._$.first_line,this._$.first_column)]; }
 ;
 
 DECLA
@@ -119,8 +130,8 @@ DECLARATION
      : resvar LISTID puntocoma {$$ = [new Instruction($2,null,null,null,Type.DECLARATION,1,this._$.first_line,this._$.first_column)];}
      | resvar id igual EXP puntocoma {$$ = [new Instruction($2,$4.op,$4.left,$4.right,Type.DECLARATION,2,this._$.first_line,this._$.first_column)];}
      | resvar id igual EXP2 puntocoma {$$ = [new Instruction($2,null,$4,null,Type.DECLARATION,3,this._$.first_line,this._$.first_column)];}
-     | resvar resstack llavea entero llavec puntocoma {$$ = [new Instruction(Type.STACK,null,'[',']',Type.DECLARATION,4,this._$.first_line,this._$.first_column)];}
-     | resvar resheap llavea entero llavec puntocoma {$$ = [new Instruction(Type.HEAP,null,'[',']',Type.DECLARATION,5,this._$.first_line,this._$.first_column)];}
+     | resvar resstack llavea entero llavec puntocoma {$$ = [new Instruction(Type.STACK,$4,'[',']',Type.DECLARATION,4,this._$.first_line,this._$.first_column)];}
+     | resvar resheap llavea entero llavec puntocoma {$$ = [new Instruction(Type.HEAP,$4,'[',']',Type.DECLARATION,5,this._$.first_line,this._$.first_column)];}
 ;
 
 BLOCK
@@ -171,12 +182,12 @@ IF
 ;
 
 PRINT
-    : resprint parenta cprint coma EXP2 parentc puntocoma {$$ = [new Instruction(null,null,$3,$5,Type.PRINT,0,this._$.first_line,this._$.first_column)];}
-    | resprint parenta cprint coma parenta resint parentc EXP2 parentc puntocoma {$$ = [new Instruction(null,null,$3,$8,Type.PRINT,0,this._$.first_line,this._$.first_column)];}
+    : resprint parenta cprint coma EXP2 parentc puntocoma {$$ = [new Instruction(null,null,$3,$5,Type.PRINT,1,this._$.first_line,this._$.first_column)];}
+    | resprint parenta cprint coma parenta resint parentc EXP2 parentc puntocoma {$$ = [new Instruction(null,null,$3,$8,Type.PRINT,2,this._$.first_line,this._$.first_column)];}
 ;
 
 PROC
-     : RETT id parenta parentc corchetea BLOCK corchetec {$$ = [new Instruction($2,null,null,null,Type.PROC,0,this._$.first_line,this._$.first_column)]; $$ = $$.concat($6); $$.push(new Instruction('end',null,null,null,Type.END,this._$.first_line,this._$.first_column))}
+     : RETT id parenta parentc corchetea BLOCK corchetec {$$ = [new Instruction($2,$1,null,null,Type.PROC,0,this._$.first_line,this._$.first_column)]; $$ = $$.concat($6); $$.push(new Instruction('end',null,null,null,Type.END,this._$.first_line,this._$.first_column))}
 ;
 
 RETT
@@ -189,8 +200,8 @@ CALL
 ;
 
 RETURNTT
-     :resreturn puntocoma
-     |resreturn entero puntocoma
+     :resreturn puntocoma {$$ = [new Instruction(null,null,null,null,Type.RETURN,1,this._$.first_line,this._$.first_column)];}
+     |resreturn entero puntocoma {$$ = [new Instruction($2,null,null,null,Type.RETURN,2,this._$.first_line,this._$.first_column)];}
 ;
 
 //producciones para las operaciones relacionales

@@ -2,7 +2,6 @@ import Count from'./Counters';
 import Type from './Type';
 import { add_error_E } from './Reports';
 class Value {
-    type_let = '';
     constructor(val, t, te, _row, _column) {
         this.value = val;
         this.type = t;
@@ -10,7 +9,8 @@ class Value {
         this.row = _row;
         this.column = _column;
         this.positions = [];
-        this.nDimension = -1;
+        this.nDimension = 0;
+        this.type_var = Type.LOCAL;
     }
 
     add_positions(positions)
@@ -71,16 +71,23 @@ class Value {
                     
                     if (a) {
                         let r = tab.getSymbol(this.value);
+                        if(r.type_exp === Type.ARREGLO)
+                        {
+                            return new Value(r.tag, r.type, r.type_exp, r.row, r.column);
+                        }else if(r.type !== Type.ENTERO && r.type !== Type.BOOL && r.type !== Type.CADENA){
+                            return new Value(r.tag, r.type, r.type_exp, r.row, r.column);
+                        }
+
                         const tag = count.getNextTemporal();
                         const tag2 = count.getNextTemporal();
-                        if (r.type_let === Type.GLOBAL) {
+                        if (r.type_var === Type.GLOBAL) {
                             count.putInstruction(tag + ' = heap[(int)' + r.tag + '];');
                         } else {
                             count.putInstruction(tag2 + ' = P + ' + r.pointer + ';');
                             count.putInstruction(tag + ' = stack[(int)' + tag2 + '];');
                         }
                         let s = new Value(tag, r.type, r.type_exp, r.row, r.column);
-                        s.type_let = r.type_let;
+                        s.type_var = r.type_var;
                         return s;
 
                     } else {
@@ -100,6 +107,8 @@ class Value {
                     let i = 0;
                     let aux_return = null;
                     let r  =null;
+                    let dimArr = 0;
+
                     while(i < this.value.length)
                     {
                         if (i === 0)
@@ -107,6 +116,7 @@ class Value {
                             let a = tab.exists(this.value[i].value+"");
                             if (a) {
                                 r = tab.getSymbol(this.value[i].value+"");
+                                dimArr = r.nDimension;
                                 if(r.type_exp === Type.ARREGLO)
                                 {
                                     if(this.value[i].positions.length > 0)
@@ -125,7 +135,7 @@ class Value {
                                             //obteniendo el valor del arreglo
                                             let puntero = count.getNextTemporal();
                                             count.putInstruction(puntero + ' = '+ r.tag + ';')
-        
+                                            let start = true;
         
                                             for(let p of this.value[i].positions)
                                             {
@@ -141,17 +151,28 @@ class Value {
                                                 let tag2 = count.paramFunc(Type.LOCAL, count.getRelative())
                                                 count.putInstruction('stack[(int)' + tag2 + '] = 0.0;');
                                     
-                                                count.putInstruction('//Insertando los parametros de llamada. Posicion 1'); // debe ser el numero de elementos que tiene el arreglo
-                                                count.putInstruction(t + ' = '+ tag2 + ' + 1;')
-                                                count.putInstruction(t2 + ' = heap[(int)' + puntero + '];')
-                                                count.putInstruction('stack[(int)' + t + '] = '+ t2 +';');
-                                    
+                                                if(start)
+                                                {
+                                                    count.putInstruction('//Insertando 1er. parametro: # elementos del arreglo'); // debe ser el numero de elementos que tiene el arreglo
+                                                    count.putInstruction(t + ' = '+ tag2 + ' + 1;')
+                                                    count.putInstruction(t2 + ' = heap[(int)' + puntero + '];')
+                                                    count.putInstruction('stack[(int)' + t + '] = '+ t2 +';');
+                                                    start = false;
+                                                }
+                                                else
+                                                {
+                                                    count.putInstruction('//Insertando 1er. parametro: # elementos del arreglo'); // debe ser el numero de elementos que tiene el arreglo
+                                                    count.putInstruction(t + ' = '+ tag2 + ' + 1;')
+                                                    count.putInstruction(puntero + ' = heap[(int)' + puntero + '];')
+                                                    count.putInstruction(t2 + ' = heap[(int)' + puntero + '];')
+                                                    count.putInstruction('stack[(int)' + t + '] = '+ t2 +';');
+                                                }
                                                 
-                                                count.putInstruction('//Insertando los parametros de llamada. Posicion 2'); // debe ser el acceso al arreglo
+                                                count.putInstruction('//Insertando 2do. parametro: # posicion acceder'); // debe ser el acceso al arreglo
                                                 count.putInstruction(t5 + ' = '+ t + ' + 1;')
                                                 count.putInstruction('stack[(int)' + t5 + '] = '+ position.value +';');
         
-                                                count.putInstruction('//Insertando los parametros de llamada. Posicion 3'); // debe ser donde comienza los punteros a los elementos
+                                                count.putInstruction('//Insertando 3er. parametro: inicio de punteros elementos'); // debe ser donde comienza los punteros a los elementos
                                                 count.putInstruction(t6 + ' = '+ puntero + ' + 1;')
                                                 count.putInstruction(t8 + ' = '+ t5 + ' + 1;')
                                                 count.putInstruction('stack[(int)' + t8 + '] = '+ t6 +';');
@@ -170,17 +191,26 @@ class Value {
                                                 count.putInstruction(puntero + ' = '+ tag2r +';');
                                 
                                                 j++;
+                                                dimArr--;
                                             }
         
                                             //dimension_ass = dimension_arr - j;
                                             aux_return = new Value(puntero, r.type, Type.ARREGLO, r.row, r.column);
                                             aux_return.nDimension = dimension_arr - j;
+
+                                            if(i + 1 < this.value.length)
+                                            {
+                                                count.putInstruction('//Obteniendo el elemento del puntero del arreglo')
+                                                count.putInstruction(aux_return.value + ' = heap[(int)' + aux_return.value + '];')
+                                            }
                                             
                                         }catch(e){ console.log(e); try{ add_error_E( {error: "La variable no es un arreglo o no existe la posicion", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); } return null;}
                                     }else
                                     {
                                         //se retorna el arreglo
-                                        aux_return = r;
+                                        let aux = new Value(r.tag, r.type, Type.ARREGLO, r.row, r.column);
+                                        aux.nDimension = r.nDimension;
+                                        aux_return = aux;
                                     }
                                 }else if(r.type !== Type.ENTERO && r.type !== Type.BOOL && r.type !== Type.CADENA)
                                 {
@@ -202,16 +232,16 @@ class Value {
                                                 let tag2 = count.paramFunc(Type.LOCAL, count.getRelative())
                                                 count.putInstruction('stack[(int)' + tag2 + '] = 0.0;');
                                     
-                                                count.putInstruction('//Insertando los parametros de llamada. Posicion 1'); // debe ser el numero de elementos que tiene el arreglo
+                                                count.putInstruction('//Insertando 1er. parametro: # de atributos objeto'); // debe ser el numero de elementos que tiene el arreglo
                                                 count.putInstruction(t + ' = '+ tag2 + ' + 1;')
                                                 count.putInstruction('stack[(int)' + t + '] = '+ type.atributes.length +';');
                                     
                                                 
-                                                count.putInstruction('//Insertando los parametros de llamada. Posicion 2'); // debe ser el acceso al arreglo
+                                                count.putInstruction('//Insertando 2do. parametro: # del atributo'); // debe ser el acceso al arreglo
                                                 count.putInstruction(t5 + ' = '+ t + ' + 1;')
                                                 count.putInstruction('stack[(int)' + t5 + '] = '+ position +';');
         
-                                                count.putInstruction('//Insertando los parametros de llamada. Posicion 3'); // debe ser donde comienza los punteros a los elementos
+                                                count.putInstruction('//Insertando 3er. parametro: inicio de punteros elementos'); // debe ser donde comienza los punteros a los elementos
                                                 count.putInstruction(t8 + ' = '+ t5 + ' + 1;')
                                                 count.putInstruction('stack[(int)' + t8 + '] = '+ r.tag +';');
                                                     
@@ -234,9 +264,14 @@ class Value {
                                             }
                                         }
                                     }
+                                    if(i + 1 < this.value.length)
+                                    {
+                                        count.putInstruction('//Obteniendo el puntero del atributo')
+                                        count.putInstruction(aux_return.value + ' = heap[(int)' + aux_return.value + '];')
+                                    }
                                 }else if(r.type === Type.CADENA)
                                 {
-                                    aux_return = r;
+                                    aux_return = new Value(r.tag, r.type, r.type_exp, r.row, r.column);
                                 }
                             } else {
                                 try{ add_error_E( {error: "El atributo / posicion arrego: " + this.value.toString() + "no a sido encontrada", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
@@ -246,7 +281,7 @@ class Value {
                         {
                             try
                             {
-                                if(r !== null)
+                                if(r !== null && dimArr === 0)
                                 {
                                     let type = tab.find_type(r.type);
                                     if(type !== null && aux_return !== null)
@@ -265,17 +300,18 @@ class Value {
                                                 let tag2 = count.paramFunc(Type.LOCAL, count.getRelative())
                                                 count.putInstruction('stack[(int)' + tag2 + '] = 0.0;');
                                     
-                                                count.putInstruction('//Insertando los parametros de llamada. Posicion 1'); // debe ser el numero de elementos que tiene el arreglo
+                                                count.putInstruction('//Insertando 1er. parametro: # de atributos objeto'); // debe ser el numero de elementos que tiene el arreglo
                                                 count.putInstruction(t + ' = '+ tag2 + ' + 1;')
                                                 count.putInstruction('stack[(int)' + t + '] = '+ type.atributes.length +';');
                                     
                                                 
-                                                count.putInstruction('//Insertando los parametros de llamada. Posicion 2'); // debe ser el acceso al arreglo
+                                                count.putInstruction('//Insertando 2do. parametro: # del atributo'); // debe ser el acceso al arreglo
                                                 count.putInstruction(t5 + ' = '+ t + ' + 1;')
                                                 count.putInstruction('stack[(int)' + t5 + '] = '+ position +';');
         
-                                                count.putInstruction('//Insertando los parametros de llamada. Posicion 3'); // debe ser donde comienza los punteros a los elementos
+                                                count.putInstruction('//Insertando 3er. parametro: inicio de punteros elementos'); // debe ser donde comienza los punteros a los elementos
                                                 count.putInstruction(t8 + ' = '+ t5 + ' + 1;')
+
                                                 count.putInstruction('stack[(int)' + t8 + '] = '+ aux_return.value +';');
                                                     
                                                 let tt = count.getRelative();
@@ -289,13 +325,17 @@ class Value {
                                                 count.putInstruction(tag + ' = P + 0;')
                                                 count.putInstruction(tag2r + ' = stack[(int)' + tag + '];')
                                                 count.putInstruction('P = P - ' + tt + ';');
-                                                if(r.type_exp !== Type.ARREGLO)
-                                                    aux_return = new Value(tag2r, r.type, Type.VALOR, r.row, r.column);
-                                                else
-                                                    aux_return = new Value(tag2r, r.type, Type.ARREGLO, r.row, r.column);
+                                                count.putInstruction('//Obteniendo la posicion del atributo: ' + da.name)
+                                                count.putInstruction(tag2r + ' = heap[(int)' + tag2r + '];')
+                                                aux_return = new Value(tag2r, da.type, Type.ARREGLO, r.row, r.column);
+                                                aux_return.nDimension = dimArr;
                                                 break;
                                             }
                                         }
+                                    }else
+                                    {
+                                        try{ add_error_E( {error: "No es un objeto para poder asignar un atributo", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
+                                        return null;
                                     }
                                 }
                                 else
@@ -304,7 +344,6 @@ class Value {
                                     return null;
                                 }
                             }catch(e){ console.log(e); try{ add_error_E( {error: "La letiable no es un arreglo o no existe la posicion", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); } return null;}
-        
                         }
                         i = i + 1;
                         if(unarydata === true && i === this.value.length -1)
@@ -316,9 +355,17 @@ class Value {
                             return this.execute_native(this.value[i+1].value, count, aux_return, value);
                         }
                     }
-                        
-
-                    return new Value(aux_return.tag, aux_return.type, aux_return.type_exp, this.row, this.column);
+                    if(aux_return !== null)
+                    {
+                        /*
+                        if(!unarydata)
+                        {
+                            count.putInstruction('//Obteniendo la posicion del atributo: ' + aux_return.type)
+                            count.putInstruction(aux_return.value + ' = heap[(int)' + aux_return.value + '];')
+                        }
+                        */
+                        return aux_return;
+                    }
                 default:
                     try{ add_error_E( {error: "Tipo " + this.type + " no Valido.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                     return new Value(null, Type.ERROR, Type.ERROR, this.row, this.column);
@@ -397,11 +444,21 @@ class Value {
                     {
                         
                         let tag = count.generateDeclaration(Type.GLOBAL, tmpExp.value, r)
+                        if(tmpExp.type === Type.CADENA)
+                        {
+                            count.putInstruction('//Guardando el puntero de la cadena al arreglo')
+                            count.putInstruction(tag + ' = heap[(int)' + tag + '];')
+                        }
                         position.push(tag);
                     }else if ((tipo === null || tipo === undefined || tipo === Type.NULL) && (tmpExp.type !== null || tmpExp.type !== Type.NULL))
                     {
                         tipo = tmpExp.type;
                         let tag = count.generateDeclaration(Type.GLOBAL, tmpExp.value, r)
+                        if(tmpExp.type === Type.CADENA)
+                        {
+                            count.putInstruction('//Guardando el puntero de la cadena al arreglo')
+                            count.putInstruction(tag + ' = heap[(int)' + tag + '];')
+                        }
                         position.push(tag);
                     }else
                     {
@@ -414,7 +471,7 @@ class Value {
     
                 let r = count.getRelativePlus();
                 let nElementos = this.value.length;
-                count.putInstruction('//Declarando la variable ' + this.value);
+                count.putInstruction('//Declarando la Expresion a Asignar');
                 let tag = count.generateDeclaration(Type.GLOBAL, nElementos, r);
                 // insertar primera posicion
                 for(let element of position)
@@ -472,11 +529,21 @@ class Value {
                 if(tipo !== null && tipo !== undefined && tipo === tmpExp.type)
                 {
                     let tag = count.generateDeclaration(Type.GLOBAL, tmpExp.value, r)
+                    if(tmpExp.type === Type.CADENA)
+                    {
+                        count.putInstruction('//Guardando el puntero de la cadena al arreglo')
+                        count.putInstruction(tag + ' = heap[(int)' + tag + '];')
+                    }
                     position.push(tag);
                 }else if ((tipo === null || tipo === undefined || tipo === Type.NULL) && (tmpExp.type !== null || tmpExp.type !== Type.NULL))
                 {
                     tipo = tmpExp.type;
                     let tag = count.generateDeclaration(Type.GLOBAL, tmpExp.value, r)
+                    if(tmpExp.type === Type.CADENA)
+                    {
+                        count.putInstruction('//Guardando el puntero de la cadena al arreglo')
+                        count.putInstruction(tag + ' = heap[(int)' + tag + '];')
+                    }
                     position.push(tag);
                 }else
                 {
