@@ -16,6 +16,7 @@ const Type = {
     NULL: 'NULL',
     ID: 'ID',
     RETURN: 'RETURN',
-    IMPORT: 'IMPORT'
+    IMPORT: 'IMPORT',
+    PROTOTYPE: 'PROTOTYPE'
 };
 export default Type;

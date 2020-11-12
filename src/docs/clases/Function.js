@@ -1,4 +1,3 @@
-import Count from'./Counters';
 import Type from './Type';
 import SymbolTable from './SymbolTable';
 import Symbol from './Symbol';
@@ -28,17 +27,17 @@ class Function {
     addParamet(count) {
         this.symbolTab = new SymbolTable(null);
         //count.putInstruction('##Insertando return de Funcion. Posicion ' + 0)
-        var r2 = 0;
-        var tag2 = '';
+        let r2 = 0;
+        let tag2 = '';
         //count.putInstruction('stack[(int)' + tag2 + '] = null;');
 
         this.symbolTab.addSymbolDirect(new Symbol(-1, this.type, this._type_exp, Type.LOCAL, Type.VAR, /*this.type_o,*/ 'return', r2, tag2));
         if (this.param !== null) {
 
-            for (var i = 0; i < this.param.length; i++) {
+            for (let i = 0; i < this.param.length; i++) {
                 //count.putInstruction('//Insertando parametros de Funcion. Posicion ' + (i + 1))
-                //var r = count.getRelativePlus();
-                //var tag = count.paramFunc(Type.LOCAL, r)
+                //let r = count.getRelativePlus();
+                //let tag = count.paramFunc(Type.LOCAL, r)
                 this.symbolTab.addSymbolDirect(new Symbol(-1, this.param[i].type, Type.VALOR, Type.LOCAL, Type.VAR, /*this.type_o,*/ this.param[i].id[0], i + 1, ''));
 
             }
@@ -47,11 +46,11 @@ class Function {
 
     operate(tab, count) {
 
-        var f = tab.getFunction(this.id);
-        //var count = new Count();
+        let f = tab.getFunction(this.id);
+        
         if (f !== null) {
 
-            var exit = count.getNextLabel();
+            let exit = count.getNextLabel();
             count.setExitRet(exit);
             count.putInstruction('//Insertando Funcion ' + this.id)
             if(this.idd !== "main")
@@ -60,7 +59,7 @@ class Function {
                 count.putInstruction('int ' + this.idd + '(){')
             
             
-            //var actual = count.getNextTemporal()
+            //let actual = count.getNextTemporal()
             this.ambit = count.getNextTemporal();
             count.newRelative();
             //count.putInstruction(actual + '= P;')
@@ -68,47 +67,30 @@ class Function {
             this.symbolTab.tsuper = tab;
             this.symbolTab.functions = tab.functions;
             count.putInstruction('//Insertando return de Funcion. Posicion ' + 0)
-            var r2 = count.getRelativePlus();
-            var tag2 = count.paramFunc(Type.LOCAL, r2)
+            let r2 = count.getRelativePlus();
+            let tag2 = count.paramFunc(Type.LOCAL, r2)
             count.putInstruction('stack[(int)' + tag2 + '] = 0.0;');
             //this.symbolTab.addSymbolDirect(new Symbol(-1, this.type, this._type_exp, Type.LOCAL, Type.VAR, this.type_o, 'return', r2, tag2, false));
             this.symbolTab.symbols[0].pointer = r2;
             this.symbolTab.symbols[0].tag = tag2;
             if (this.param !== null) {
 
-                for (var i = 0; i < this.param.length; i++) {
+                for (let i = 0; i < this.param.length; i++) {
                     count.putInstruction('//Insertando parametros de Funcion. Posicion ' + (i + 1))
-                    var r = count.getRelativePlus();
-                    var tag = count.paramFunc(Type.LOCAL, r)
+                    let r = count.getRelativePlus();
+                    let tag = count.paramFunc(Type.LOCAL, r)
                     //this.symbolTab.addSymbolDirect(new Symbol(-1, this.param[i].type, Type.VALOR, Type.LOCAL, Type.VAR, this.type_o, this.param[i].id[0], r, tag, false));
                     this.symbolTab.symbols[i+1].pointer = r;
                     this.symbolTab.symbols[i+1].tag = tag;
                 }
             }
             count.putInstruction('//Empezo el cuerpo de la funcion.')
-            for (var i = 0; i < this.body.length; i++) {
+            for (let i = 0; i < this.body.length; i++) {
                 this.body[i].operate(this.symbolTab, count);
                 count.putInstruction('');
             }
 
 
-            /*switch(f.type){
-                case Type.ENTERO:
-    
-                break;
-                case Type.DECIMAL:
-                break;
-                case Type.CHAR:
-                break;
-                case Type.VOID:
-                    if(symb.tag !== null){
-                        count.putError(Type.SEMANTICO,'Se retorno una Expresion en la Funcion '+f.id+' de tipo Void',this.row,this.column);
-                        return null;
-                    }
-                break;
-                default:
-                break;
-            }*/
             this.size = count.getRelative() + 1;
             //count.putInstruction('P = P -' + this.size + ';')
             count.clearExitRet();

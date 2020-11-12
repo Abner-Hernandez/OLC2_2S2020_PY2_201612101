@@ -1,4 +1,3 @@
-import Count from'./Counters';
 import Type from './Type';
 import SymbolTable from './SymbolTable';
 import { add_error_E } from './Reports';
@@ -14,18 +13,17 @@ class For{
     }
 
     operate(tab, count) {
-        //var count = new Count();
-        var s = new SymbolTable(tab);
+        let s = new SymbolTable(tab);
         count.putInstruction('//Generando el For');
         if(this.declaration !== null){
             this.declaration.operate(s, count);
         }
         
         
-        var tagin = count.getNextLabel();
+        let tagin = count.getNextLabel();
         count.putInstruction(tagin+':');
         
-        var r = this.exp.operate(s, count);
+        let r = this.exp.operate(s, count);
         if (r === null) {
             try{ add_error_E( {error: "No se puede ejecutar la operacion " + r.type + ", se necesita una condicion logica o relacional.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
             return null;
@@ -34,11 +32,11 @@ class For{
             try{ add_error_E( {error: "No se puede ejecutar la operacion " + r.type + ", se necesita una condicion logica o relacional.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
             return null;
         }
-        var e = count.generateIf(r.value,'==',0);
+        let e = count.generateIf(r.value,'==',0);
         count.pushFinal(e);
-        var c = count.getNextLabel();
+        let c = count.getNextLabel();
         count.pushInit(c);
-        for(var i = 0; i<this.body.length; i++){
+        for(let i = 0; i<this.body.length; i++){
             this.body[i].operate(s, count)
         }
         

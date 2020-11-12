@@ -1,4 +1,3 @@
-import Count from'./Counters';
 import Type from './Type';
 import SymbolTable from './SymbolTable';
 import { add_error_E } from './Reports';
@@ -12,14 +11,13 @@ class DoWhile {
     }
 
     operate(tab, count) {
-        //var count = new Count();
-        var init = count.getNextLabel();
+        let init = count.getNextLabel();
         count.putInstruction('//Iniciando el Do While');
         count.putInstruction(init + ':');
         count.pushInit(init);
-        var s = new SymbolTable(tab);
-        var r = this.exp.operate(tab, count);
-        var l = count.getNextLabel();
+        let s = new SymbolTable(tab);
+        let r = this.exp.operate(tab, count);
+        let l = count.getNextLabel();
         count.pushFinal(l);
         if (r === null) {
             try{ add_error_E( {error: "No se puede ejecutar la operacion " + r.type + ", se necesita una condicion logica o relacional.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
@@ -30,7 +28,7 @@ class DoWhile {
             return null;
         }
         
-        for (var i = 0; i < this.body.length; i++) {
+        for (let i = 0; i < this.body.length; i++) {
 
             this.body[i].operate(s, count);
         }

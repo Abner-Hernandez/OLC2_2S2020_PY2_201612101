@@ -1,4 +1,3 @@
-import Count from'./Counters';
 import Type from './Type';
 import SymbolTable from './SymbolTable';
 import { add_error_E } from './Reports';
@@ -12,10 +11,10 @@ class While {
     }
 
     operate(tab, count) {
-        //var count = new Count();
-        var init = count.getNextLabel();
+        
+        let init = count.getNextLabel();
         count.putInstruction(init + ':');
-        var r = this.exp.operate(tab, count);
+        let r = this.exp.operate(tab, count);
         
         if (r === null) {
             try{ add_error_E( {error: "No se puede ejecutar la operacion " + r.type + ", se necesita una condicion logica o relacional.", type: 'SINTACTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
@@ -26,12 +25,12 @@ class While {
             try{ add_error_E( {error: "No se puede ejecutar la operacion " + r.type + ", se necesita una condicion logica o relacional.", type: 'SINTACTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
         }
         
-        var aux = count.generateIf(r.value,'==',0);
+        let aux = count.generateIf(r.value,'==',0);
         count.pushFinal(aux);
         count.pushInit(init);
-        var s = new SymbolTable(tab);
+        let s = new SymbolTable(tab);
         //for (int i = 0; i < body.size(); i++) {
-        for (var i = 0; i < this.body.length; i++) {
+        for (let i = 0; i < this.body.length; i++) {
 
             this.body[i].operate(s, count);
         }

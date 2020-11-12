@@ -106,6 +106,8 @@ class InstructionTab {
                 }
             } else if (this.instructions[i].type == Type.IMPORT) {
                 this.putInstruction(this.instructions[i].id);
+            } else if (this.instructions[i].type == Type.PROTOTYPE) {
+                this.putInstruction(this.instructions[i].op + ' ' + this.instructions[i].id + '();\n');
             } else if (this.instructions[i].type == Type.PROC) {
                 this.putInstruction(this.instructions[i].op + ' ' + this.instructions[i].id + '() {');
             } else if (this.instructions[i].type == Type.END) {

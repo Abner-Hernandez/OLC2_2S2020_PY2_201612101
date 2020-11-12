@@ -143,27 +143,27 @@ class Counter
     }
 
     generateInstruction(left, op, right) {
-        var t = this.getNextTemporal();
+        let t = this.getNextTemporal();
         this.putInstruction(t + ' = ' + left + ' ' + op + ' ' + right + ';');
         return t;
     }
 
     generateIf(left, op, right) {
-        var t = this.getNextLabel();
+        let t = this.getNextLabel();
         this.putInstruction('if(' + right + ' ' + op + ' ' + left + ') goto ' + t + ';');
         return t;
     }
 
     generateIf2(left, op, right, t) {
-        //var t = this.getNextLabel();
+        //let t = this.getNextLabel();
         this.putInstruction('if(' + right + ' ' + op + ' ' + left + ') goto ' + t + ';');
 
     }
 
     operateRelational(left, op, right) {
-        var tv = this.getNextLabel();
-        var to = this.getNextLabel();
-        var t1 = this.getNextTemporal();
+        let tv = this.getNextLabel();
+        let to = this.getNextLabel();
+        let t1 = this.getNextTemporal();
         this.putInstruction('if(' + left + ' ' + op + ' ' + right + ') goto ' + tv + ';');
         this.putInstruction(t1 + ' = 0;');
         this.putInstruction('goto ' + to + ';');
@@ -174,7 +174,7 @@ class Counter
     }
 
     generateDeclaration(tipo, value, relative) {
-        var t = this.getNextTemporal();
+        let t = this.getNextTemporal();
         if (Type.GLOBAL === tipo) {
             this.putInstruction(t + ' = H;');
             this.putInstruction('H = H + 1;');
@@ -189,7 +189,7 @@ class Counter
     }
 
     paramFunc(tipo, relative) {
-        var t = this.getNextTemporal();
+        let t = this.getNextTemporal();
         if (Type.GLOBAL === tipo) {
             this.putInstruction(t + ' = H;');
             this.putInstruction('H = H + 1;');
@@ -201,7 +201,7 @@ class Counter
     }
 
     paramCall(tipo, ambit, value, relative) {
-        var t = this.getNextTemporal();
+        let t = this.getNextTemporal();
         if (Type.GLOBAL === tipo) {
             this.putInstruction(t + ' = H;');
             this.putInstruction('H = H + 1;');
@@ -216,20 +216,20 @@ class Counter
     }
 
     getNextTemporal() {
-        var n = this.temporals;
+        let n = this.temporals;
         this.temporals++
         return 't' + n;
     }
 
     getNextTemporalArr(nDimension) {
-        var n = this.temporalsArr;
+        let n = this.temporalsArr;
         this.temporalsArr++
         this.temporalsArrD.push(['arr' + n, nDimension]);
         return 'arr' + n;
     }
 
     getNextLabel() {
-        var r = this.labels;
+        let r = this.labels;
         this.labels++;
         return 'l' + r;
     }
@@ -243,8 +243,8 @@ class Counter
     }
 
     getOutput() {
-        var temp = '#include <stdio.h>\ndouble heap[16384];\ndouble stack[16394];\ndouble P = 0;\ndouble H = 0;\ndouble t0';
-        for (var i = 1; i <= this.temporals; i++) {
+        let temp = '#include <stdio.h>\n#include <math.h>\ndouble heap[16384];\ndouble stack[16394];\ndouble P = 0;\ndouble H = 0;\ndouble t0';
+        for (let i = 1; i <= this.temporals; i++) {
             temp += ',t' + i
         }
         temp += ';\n\n'
@@ -252,7 +252,7 @@ class Counter
         if(this.temporalsArrD.length > 0 )
         {
             temp += 'double ' + this.temporalsArrD[0][0] + "["+ this.temporalsArrD[0][1] +"]"
-            for (var i = 1; i <= this.temporalsArrD; i++) {
+            for (let i = 1; i <= this.temporalsArrD; i++) {
                 temp += ',' + this.temporalsArrD[i][0] + "["+ this.temporalsArrD[i][1] +"]"
             }
             temp += ';\n\n'
@@ -263,7 +263,7 @@ class Counter
     }
 
     getGlobals() {
-        var r = this.output;
+        let r = this.output;
         this.output = '';
         return r;
     }

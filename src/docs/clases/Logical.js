@@ -1,4 +1,3 @@
-import Count from'./Counters';
 import Type from './Type';
 import Value from './Value';
 import { add_error_E } from './Reports';
@@ -14,10 +13,10 @@ class Logical {
     }
 
     operate(tab, count) {
-        //var count = new Count();
-        var tempL = null;
-        var tempR = null;
-        /*var tf = '';
+        
+        let tempL = null;
+        let tempR = null;
+        /*let tf = '';
         if (count.getTagsSize() === 0) {
             tf = count.getNextLabel();
             //count.pushTagsvf(tf);
@@ -37,9 +36,9 @@ class Logical {
             if (tempL.type_exp === Type.VALOR && tempR.type_exp === Type.VALOR) {
                 if (tempL.type === Type.BOOL && tempR.type === Type.BOOL) {
                     if (null !== this.type) {
-                        var tf = count.getNextLabel();
-                        var to = count.getNextLabel();
-                        var t1 = count.getNextTemporal();
+                        let tf = count.getNextLabel();
+                        let to = count.getNextLabel();
+                        let t1 = count.getNextTemporal();
                         switch (this.type) {
                             case Type.AND:
                                 //return new Value(tempL.value && tempR.value, Type.BOOL, Type.VALOR, this.row, this.column);
@@ -49,7 +48,7 @@ class Logical {
                                 count.putInstruction('if(' + tempR.value + ' != 1) goto ' + tf + ';');
                                 //count.popTagsvf()
                                 /*if (count.getTagsSize() === 0) {
-                                    var to = count.getNextLabel();
+                                    let to = count.getNextLabel();
                                     count.putInstruction(t1 + ' = 1' + ';');
                                     count.putInstruction('goto ' + to + ';');
                                     count.putInstruction(tf + ':');
@@ -70,7 +69,7 @@ class Logical {
                                 count.putInstruction('if(' + tempR.value + ' == 1) goto ' + tf + ';');
                                 //count.popTagsvf()
                                 /*if (count.getTagsSize() === 0) {
-                                    var to = count.getNextLabel();
+                                    let to = count.getNextLabel();
                                     count.putInstruction(t1 + ' = 0' + ';');
                                     count.putInstruction('goto ' + to + ';');
                                     count.putInstruction(tf + ':');
@@ -90,7 +89,7 @@ class Logical {
                                 count.putInstruction('if(' + tempL.value + ' != ' + tempR.value + ') goto ' + tf + ';');
                                 //count.popTagsvf()
                                 /*if (count.getTagsSize() === 0) {
-                                    var to = count.getNextLabel();
+                                    let to = count.getNextLabel();
                                     count.putInstruction(t1 + ' = 0' + ';');
                                     count.putInstruction('goto ' + to + ';');
                                     count.putInstruction(tf + ':');
@@ -115,9 +114,9 @@ class Logical {
         } else if (tempR === null && tempL !== null) {
             if (tempL.type_exp === Type.VALOR) {
                 if (this.type === Type.NOT) {
-                    var tf = count.getNextLabel();
-                    var to = count.getNextLabel();
-                    var t1 = count.getNextTemporal();
+                    let tf = count.getNextLabel();
+                    let to = count.getNextLabel();
+                    let t1 = count.getNextTemporal();
                     count.putInstruction('if(' + tempL.value + ' == 1) goto ' + tf + ';');
 
                     count.putInstruction(t1 + ' = 1' + ';');

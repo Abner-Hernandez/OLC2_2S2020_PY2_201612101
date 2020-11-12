@@ -1,5 +1,4 @@
 
-import Count from'./Counters';
 import Type from './Type';
 import { add_error_E } from './Reports';
 class Print {
@@ -12,13 +11,13 @@ class Print {
     }
 
     operate(tab, count) {
-        //var count = new Count();
+        
         count.putInstruction('//Operando la expresion de Print');
-        var e = null;
+        let e = null;
         if (!Array.isArray(this.value)) {
             e = this.value.operate(tab, count);
         } else {
-            var e = this.value[0].operate(tab, count);       ///////////////////aca se debe modificar para la recursion de llamadas
+            e = this.value[0].operate(tab, count);       ///////////////////aca se debe modificar para la recursion de llamadas
         }
 
         if (e !== null) {
@@ -36,14 +35,15 @@ class Print {
                 }
             }
 
-            if (Type.VALOR === e.type_exp && (e.type === Type.ENTERO || e.type === Type.DECIMAL || e.type === Type.CARACTER || e.type === Type.BOOL)) {
-                var type = '';
-                var cast = '';
+            if (Type.VALOR === e.type_exp && (e.type === Type.ENTERO || e.type === Type.BOOL)) {
+                let type = '';
+                let cast = '';
                 switch (e.type) {
-                    case Type.DECIMAL:
+                    case Type.ENTERO:
                         type = '%f'
                         cast = '(float)'
                         break;
+                    /*
                     case Type.ENTERO:
                         type = '%d'
                         cast = '(int)'
@@ -52,9 +52,10 @@ class Print {
                         type = '%c'
                         cast = '(char)'
                         break;
+                    */
                     case Type.BOOL:
-                        var l = count.getNextLabel();
-                        var l2 = count.getNextLabel();
+                        let l = count.getNextLabel();
+                        let l2 = count.getNextLabel();
                         count.generateIf2(e.value,'==','0',l);
                         count.putInstruction('printf("%c",116);');
                         count.putInstruction('printf("%c",114);');

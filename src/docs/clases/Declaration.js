@@ -1,4 +1,3 @@
-import Count from'./Counters';
 import Type from './Type';
 import Value from './Value';
 import Symbol from './Symbol';
@@ -44,11 +43,8 @@ class Declaration {
         {
             if (tmpExp == null  && this.value == null && this.type != undefined && this.type !== Type.OBJETO) {
                 switch (this.type) {
-                    case Type.DECIMAL:
-                        tmpExp = new Value(0.0, this.type, this.type_exp, this.type_var, this.row, this.column);
-                        break;
                     case Type.ENTERO:
-                        tmpExp = new Value(0, this.type, this.type_exp, this.type_var, this.row, this.column);
+                        tmpExp = new Value(0.0, this.type, this.type_exp, this.type_var, this.row, this.column);
                         break;
                     case Type.CHAR:
                         tmpExp = new Value('\0', this.type, this.type_exp, this.type_var, this.row, this.column);
@@ -60,7 +56,7 @@ class Declaration {
             }
             if (a === false) {
     
-                if(this.type !== Type.DECIMAL && this.type !== Type.ENTERO && this.type !== Type.BOOL && this.type !== Type.CADENA)
+                if(this.type !== Type.ENTERO && this.type !== Type.BOOL && this.type !== Type.CADENA)
                 {
                     if (this.type !== Type.ARREGLO)
                     {
@@ -199,7 +195,7 @@ class Declaration {
                             if(tab.find_type(at2.type) === null)
                             {
                                 let temp = at[1].operate(tab, count);
-                                if((temp === null || temp.type !== at2.type) && (this.type === Type.DECIMAL || this.type === Type.ENTERO || this.type === Type.BOOL || this.type === Type.CADENA) )
+                                if((temp === null || temp.type !== at2.type) && (this.type === Type.ENTERO || this.type === Type.BOOL || this.type === Type.CADENA) )
                                 {
                                     try{ add_error_E( {error: "El atributo no es del tipo correcto: " + temp.type + "con el del type: " + at2.type, type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
                                     return null;
@@ -229,14 +225,6 @@ class Declaration {
                                 break;
                             }else
                             {
-                                /*
-                                let temp = at[1].operate(tab, count);
-                                if((temp === null || temp.type !== at2.type) && (this.type === Type.DECIMAL || this.type === Type.ENTERO || this.type === Type.BOOL || this.type === Type.CADENA) )
-                                {
-                                    try{ add_error_E( {error: "El atributo no es del tipo correcto: " + temp.type + "con el del type: " + at2.type, type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
-                                    return null;
-                                }
-                                */
                                 
                                 if (at[1].value !== null)
                                 {                                    

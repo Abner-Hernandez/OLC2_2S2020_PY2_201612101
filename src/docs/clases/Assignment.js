@@ -11,7 +11,6 @@ class Assignment {
     }
 
     operate(tab, count) {
-        //var count = new Count();
         if(this.id instanceof(Array))
         {
             if(this.id.length > 1)
@@ -255,12 +254,13 @@ class Assignment {
             }
             if(aux_return !== null)
             {
+                let tmpExp = null
                 if(r.type_exp !== Type.ARREGLO)
                 {
                     if(aux_return instanceof Value)
                     {
                         if(aux_return.type === Type.ENTERO || aux_return.type === Type.BOOL || aux_return.type === Type.CADENA)
-                        {
+;                        {
                             tmpExp = this.value.operate(tab, count);
                             if (tmpExp !== null && tmpExp.type === aux_return.type) 
                             {
@@ -306,8 +306,8 @@ class Assignment {
         }
         else
         {
-            var a = tab.getSymbol(this.id/*[0]*/.value);
-            var tmpExp;
+            let a = tab.getSymbol(this.id/*[0]*/.value);
+            let tmpExp;
             console.log(this.value);
             count.putInstruction('//Iniciando la Asignacion de ' + this.id/*[0]*/.value);
             if (!(Array.isArray(this.value))) {
@@ -332,7 +332,7 @@ class Assignment {
                         {
                             a.type_exp = tmpExp.type_exp;
                             a.type = tmpExp.type;
-                            var t = count.getNextTemporal();
+                            let t = count.getNextTemporal();
                             if (a.type_var === Type.GLOBAL) {
                                 count.putInstruction('heap[(int)' + a.tag + '] = ' + tmpExp.value + ';');
                             } else {
@@ -349,7 +349,7 @@ class Assignment {
                     {
                         a.type_exp = tmpExp.type_exp;
                         a.type = tmpExp.type;
-                        var t = count.getNextTemporal();
+                        let t = count.getNextTemporal();
                         if (a.type_var === Type.GLOBAL) {
                             count.putInstruction('heap[(int)' + a.tag + '] = ' + tmpExp.value + ';');
                         } else {

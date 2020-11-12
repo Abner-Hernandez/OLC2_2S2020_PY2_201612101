@@ -1,4 +1,3 @@
-import Count from'./Counters';
 import Type from './Type';
 import { add_error_E } from './Reports';
 class Value {
@@ -24,9 +23,6 @@ class Value {
             //LinkedList<Object> rr = new LinkedList<>();
             switch (this.type) {
                 case Type.ENTERO:
-                    return new Value(this.value, this.type, this.type_exp, this.row, this.column);
-
-                case Type.DECIMAL:
                     return new Value(this.value, this.type, this.type_exp, this.row, this.column);
 
                 case Type.DEFAULT:
@@ -55,17 +51,6 @@ class Value {
                     return new Value(0, this.type, this.type_exp, this.row, this.column);
                 case Type.NULL:
                     return new Value('null', Type.NULL, Type.VALOR, this.row, this.column);
-                case Type.CARACTER:
-                    let ret = this.value.replace(/'/g,'');
-                    
-                    if(String(ret) === "\\n"){
-                        return new Value(10, Type.CARACTER, Type.VALOR, this.row, this.column);
-                    } else if(ret === "\\r"){
-                        return new Value(8, Type.CARACTER, Type.VALOR, this.row, this.column);
-                    } else if(ret === "\\t"){
-                        return new Value(9, Type.CARACTER, Type.VALOR, this.row, this.column);
-                    }
-                    return new Value(ret.charCodeAt(0), Type.CARACTER, Type.VALOR, this.row, this.column);
                 case Type.ID:
                     let a = tab.exists(this.value);
                     
@@ -357,13 +342,6 @@ class Value {
                     }
                     if(aux_return !== null)
                     {
-                        /*
-                        if(!unarydata)
-                        {
-                            count.putInstruction('//Obteniendo la posicion del atributo: ' + aux_return.type)
-                            count.putInstruction(aux_return.value + ' = heap[(int)' + aux_return.value + '];')
-                        }
-                        */
                         return aux_return;
                     }
                 default:

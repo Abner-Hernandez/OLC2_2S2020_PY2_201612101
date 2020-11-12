@@ -1,4 +1,3 @@
-import Count from'./Counters';
 import Type from './Type';
 import { add_error_E } from './Reports';
 
@@ -13,10 +12,10 @@ class Return {
     }
 
     operate(tab, count) {
-        //var count = new Count();
+        
         console.log(this)
-        var symb = null;
-        var i = 0;
+        let symb = null;
+        let i = 0;
         symb = tab.getSymbol('return');
         /*for(i; i< tab.symbols.length; i++){
             if(tab.symbols[i].id === "return"){
@@ -29,7 +28,7 @@ class Return {
             return null;
         }
         if (this.value != null) {
-            var tmpExp = null;
+            let tmpExp = null;
             if(!(this.value instanceof Array)){
                 tmpExp = this.value.operate(tab, count);
             }else{

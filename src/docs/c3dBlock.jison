@@ -24,7 +24,7 @@
 "%"              return 'modulo';
 
 //relacionales
-"<>"               return 'diferente';
+"!="               return 'diferente';
 ">="               return 'mayorigual';
 "<="               return 'menorigual';
 "<"                return 'menor';
@@ -58,6 +58,7 @@
 "return"                return 'resreturn';
 
 "#include <stdio.h>"    return 'resinclude1';
+"#include <math.h>"    return 'resinclude2';
 
 /* Espacios en blanco */
 [ \r\t]+                  {}
@@ -97,23 +98,32 @@
 %% /* Definición de la gramática */
 
 ini
-     : IMPORT DECLA INSTRUCTIONS EOF {
-          var tab = new InstructionTab();
+     : IMPORT IMPORT DECLA INSTRUCTIONS EOF {
+          let tab = new InstructionTab();
           $$ = $1;
           $$ = $$.concat($2);
           $$ = $$.concat($3);
-          console.log($1)
+          $$ = $$.concat($4);
+          //console.log($1)
           tab.instructions = $$;
           //return tab.operateBlock();
           //tab.operate()
-          console.log(tab.operate());
-          console.log(tab.Roptimize);
+          let m = tab.operate();
+          //console.log(m);
+          for(let aux of tab.Roptimize)
+          {
+               try{ add_console( JSON.stringify(aux) ); }catch(e){ console.log(e); }
+          }
+          //console.log(tab.Roptimize);
+          return m;
+
      }
-     | EOF {var tab = new InstructionTab(); tab.instructions = []; return tab.operateBlock();}
+     | EOF {let tab1 = new InstructionTab(); tab.instructions = []; return tab.operateBlock();}
 ;
 
 IMPORT
      : resinclude1 { $$ = [new Instruction($1,null,null,null,Type.IMPORT,0,this._$.first_line,this._$.first_column)]; }
+     | resinclude2 { $$ = [new Instruction($1,null,null,null,Type.IMPORT,0,this._$.first_line,this._$.first_column)]; }
 ;
 
 DECLA
@@ -152,7 +162,7 @@ INSTRUCTION
     | PRINT {$$ = $1;}
     | PROC {$$ = $1;}
     | CALL {$$ = $1;}
-    | RETURNTT
+    | RETURNTT {$$ = $1;}
 ;
 
 
@@ -188,6 +198,7 @@ PRINT
 
 PROC
      : RETT id parenta parentc corchetea BLOCK corchetec {$$ = [new Instruction($2,$1,null,null,Type.PROC,0,this._$.first_line,this._$.first_column)]; $$ = $$.concat($6); $$.push(new Instruction('end',null,null,null,Type.END,this._$.first_line,this._$.first_column))}
+     | RETT id parenta parentc puntocoma { $$ = [new Instruction($2,$1,null,null,Type.PROTOTYPE,0,this._$.first_line,this._$.first_column)]; }
 ;
 
 RETT

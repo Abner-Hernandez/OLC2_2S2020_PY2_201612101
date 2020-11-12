@@ -13,7 +13,7 @@ const Type = {
     VECTOR: 'VECTOR',
     CARACTER: 'CARACTER',
     ENTERO: 'ENTERO',
-    DECIMAL: 'DECIMAL',
+    //DECIMAL: 'DECIMAL',
     BOOL: 'BOOL',
     CADENA: 'CADENA',
     NULL: 'NULL',

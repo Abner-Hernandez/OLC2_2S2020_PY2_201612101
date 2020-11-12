@@ -32,17 +32,17 @@ class App extends Component {
   }
 
   translate_input = (e) => {
-    var arr = [];
+    let arr = [];
     localStorage.setItem('errores_T', JSON.stringify(arr));
     localStorage.setItem('simbtable_T', JSON.stringify(arr));
 
     try{
-      var ast_trans = ast.parse(this.text1);
+      let ast_trans = ast.parse(this.text1);
       this.ast = ast_trans;
     }catch(e){ console.log(e); console.log("error ast traduccion")}
     
     try{
-      var data = grammar.parse(this.text1);
+      let data = grammar.parse(this.text1);
       this.text2 = data;
       this.child2.current.modify_text(data);
       this.child3.current.removeRow();
@@ -53,19 +53,19 @@ class App extends Component {
   }
 
   ejecutar_input = (e) => {
-    var arr = [];
+    let arr = [];
     localStorage.setItem('errores_E', JSON.stringify(arr));
     localStorage.setItem('simbtable_E', JSON.stringify(arr));
     localStorage.setItem('console', "");
 
     try{
-      var ast_trans = ast.parse(this.text2);
+      let ast_trans = ast.parse(this.text2);
       this.ast = ast_trans;
     }catch(e){ console.log(e); console.log("error ast ejecucion"); }
     
 
     try{
-      var data = interprete.parse(this.text2);
+      let data = interprete.parse(this.text2);
       this.text3 = data;
       this.child5.current.modify_text(data);
       this.child3.current.agregar_datos(JSON.parse(localStorage.getItem('errores_E')));
@@ -80,23 +80,22 @@ class App extends Component {
 
   optimizar_input = (e) => {
     /*
-    var arr = [];
+    let arr = [];
     localStorage.setItem('errores_T', JSON.stringify(arr));
     localStorage.setItem('simbtable_T', JSON.stringify(arr));
 
     try{
-      var ast_trans = ast.parse(this.text1);
+      let ast_trans = ast.parse(this.text1);
       this.ast = ast_trans;
     }catch(e){ console.log(e); console.log("error ast traduccion")}
     */
     try{
-      var data = c3dBlock.parse(this.text3);
+      let data = c3dBlock.parse(this.text3);
       this.text4 = data;
       this.child6.current.modify_text(data);
-      this.child3.current.removeRow();
-      this.child4.current.removeRow();
-      this.child3.current.agregar_datos(JSON.parse(localStorage.getItem('errores_T')));
-      this.child4.current.agregar_datos(JSON.parse(localStorage.getItem('simbtable_T')));
+      this.setState({
+        value: localStorage.getItem('console'),
+      });
     }catch(e){ console.log(e); }
   }
 

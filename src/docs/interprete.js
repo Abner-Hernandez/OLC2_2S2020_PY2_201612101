@@ -1174,6 +1174,120 @@ _handle_error:
           count.putInstruction('return;\n}\n');
 
           count.resetRelative();
+
+          //Codigo para convertir numero ya sea decimal a cadena soy crack
+          count.putInstruction('//Insertando Funcion number_to_string_3d()')
+          count.putInstruction('void number_to_string_3d(){')
+          count.putInstruction('//Insertando return de Funcion. Posicion 0')
+          let tans = count.paramFunc(Type.LOCAL, 0)
+          count.putInstruction('stack[(int)' + tans + '] = 0.0;');
+
+          count.putInstruction('//Insertando parametros de Funcion. Posicion 1')
+          let tans1 = count.paramFunc(Type.LOCAL, 1)
+
+          count.putInstruction('//Empezo el cuerpo de la funcion.')
+          let par1ns = count.getNextTemporal();
+          let csn = count.getNextTemporal();
+          let auxsn = count.getNextTemporal();
+          let bsn = count.getNextTemporal();
+          let nnsn = count.getNextTemporal();
+          let pshsn = count.getNextTemporal();
+          let zero = count.getNextTemporal();
+          let a1 = count.getNextTemporal();
+          let a2 = count.getNextTemporal();
+          let dot = count.getNextTemporal();
+          count.putInstruction(par1ns + ' = stack[(int)'+ tans1 + '];');
+          let wh1 = count.getNextLabel();
+          let wh2 = count.getNextLabel();
+          let wh3 = count.getNextLabel();
+          let endsn = count.getNextLabel();
+          let dec1 = count.getNextLabel();
+          let dec2 = count.getNextLabel();
+          let dec3 = count.getNextLabel();
+          let returnsn = 0;
+          let decsn = count.generateDeclaration(Type.GLOBAL,48,0);
+
+          count.putInstruction(csn + ' = 0;');
+          count.putInstruction(dot + ' = 0;');
+          count.putInstruction(zero + ' = 0;');
+          count.putInstruction(wh1 + ':');
+          count.putInstruction(par1ns + ' = ' + par1ns + ' / 10;');
+          count.putInstruction(csn + ' = ' + csn + ' + 1;');
+          count.putInstruction(auxsn + ' = (int)' + par1ns + ';');
+
+          count.generateIf2(auxsn,'<','0',wh1);
+          count.putInstruction(bsn + ' = 0;');
+
+          count.putInstruction(wh2 + ':');
+          count.generateIf2(csn,'==','0',wh3);
+          count.putInstruction(par1ns + ' = ' + par1ns + ' * 10;');
+          count.putInstruction(a1 + ' = (int)' + par1ns + ';');
+          count.putInstruction(a2 + ' = ' + bsn + ' * 10;');
+          count.putInstruction(nnsn + ' = ' + a1 + ' - ' + a2 + ';');
+          count.putInstruction(par1ns + ' = ' + par1ns + ' - ' + a2 + ';');
+          count.putInstruction(bsn + ' = ' + nnsn + ' ;');
+          count.putInstruction(csn + ' = ' + csn + ' - 1;');
+
+          count.putInstruction(bsn + ' = ' + bsn + ' + 48;');
+          count.generateIf2(zero,'!=','0',dec1);
+          let aa1 = count.generateDeclaration(Type.GLOBAL,bsn,0);
+          count.putInstruction(decsn + ' = ' + aa1 + ';');
+          count.putInstruction(zero + ' = 1;');
+          count.putInstruction(bsn + ' = ' + bsn + ' - 48;');
+          count.putInstruction('goto '+wh2+';');
+
+          count.putInstruction(dec1 + ':');
+          count.putInstruction(pshsn + ' = H;');
+          count.putInstruction('H = H + 1;');
+          count.putInstruction('heap[(int)' + pshsn + '] = '+bsn+';')
+          count.putInstruction(bsn + ' = ' + bsn + ' - 48;');
+          count.putInstruction('goto '+wh2+';');
+
+          count.putInstruction(wh3 + ':');
+          count.putInstruction(par1ns + ' = ' + par1ns + ' * 10;');
+          count.putInstruction(a1 + ' = (int)' + par1ns + ';');
+          count.putInstruction(a2 + ' = ' + bsn + ' * 10;');
+          count.putInstruction(nnsn + ' = ' + a1 + ' - ' + a2 + ';');
+          count.putInstruction(par1ns + ' = ' + par1ns + ' - ' + a2 + ';');
+          count.putInstruction(bsn + ' = ' + nnsn + ' ;');
+          count.generateIf2(bsn,'==','0',endsn);
+
+          count.putInstruction(bsn + ' = ' + bsn + ' + 48;');
+          count.generateIf2(zero,'!=','0',dec2);
+          let aa2 = count.generateDeclaration(Type.GLOBAL,48,0);
+          count.putInstruction(decsn + ' = ' + aa2 + ';');
+          count.putInstruction(pshsn + ' = H;');
+          count.putInstruction('H = H + 1;');
+          count.putInstruction('heap[(int)' + pshsn + '] = '+46+';')
+          count.putInstruction(pshsn + ' = H;');
+          count.putInstruction('H = H + 1;');
+          count.putInstruction('heap[(int)' + pshsn + '] = '+bsn+';')
+          count.putInstruction(zero + ' = 1;');
+          count.putInstruction(bsn + ' = ' + bsn + ' - 48;');
+          count.putInstruction('goto '+wh3+';');
+
+          count.putInstruction(dec2 + ':');
+          count.generateIf2(dot,'!=','0',dec3);
+          count.putInstruction(dot + ' = 1;');
+          count.putInstruction(pshsn + ' = H;');
+          count.putInstruction('H = H + 1;');
+          count.putInstruction('heap[(int)' + pshsn + '] = '+46+';')
+
+          count.putInstruction(dec3 + ':');
+          count.putInstruction(pshsn + ' = H;');
+          count.putInstruction('H = H + 1;');
+          count.putInstruction('heap[(int)' + pshsn + '] = '+bsn+';')
+          count.putInstruction(bsn + ' = ' + bsn + ' - 48;');
+
+          count.putInstruction('goto '+wh3+';');
+
+          count.putInstruction(endsn + ':');
+          count.putInstruction(pshsn + ' = H;');
+          count.putInstruction('H = H + 1;');
+          count.putInstruction('heap[(int)' + pshsn + '] = '+0+';')
+          count.putInstruction('stack[(int)' + tans + '] = ' + decsn + ';');
+          count.putInstruction('return;\n}\n');
+
      }
 /* generated by jison-lex 0.3.4 */
 var lexer = (function(){
