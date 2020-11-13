@@ -21,6 +21,13 @@ class Call {
         this.type_exp = Type.LLAMADA;
 
         let f = tab.getFunction(this.id);
+        let res = this.id.split("__");
+        if(res.length > 1)
+        {
+            let pointer = count.getNextTemporal();
+            count.putInstruction(pointer+' = P ;');
+            f.merge_table(tab, pointer, count);
+        }
         if (f === null) {
             try { add_error_E({ error: "Funcion: " + this.id + ", No Declarada.", type: 'SEMANTICO', line: this.row, column: this.column }); } catch (e) { console.log(e); }
             return null;
@@ -37,8 +44,10 @@ class Call {
             count.addPrevRelative();
             count.getRelativePlus();
             
+
+
             for (let i = 0; i < f.param.length; i++) {
-                var symb = f.symbolTab.getSymbol(f.param[i].id/*[0]*/);
+                let symb = f.symbolTab.getSymbol(f.param[i].id/*[0]*/);
                 if (symb !== null) {
                     let tmpV = null;
                     count.putInstruction('//Insertando los parametros de llamada. Posicion ' + symb.pointer);
@@ -52,7 +61,7 @@ class Call {
                         try { add_error_E({ error: "Parametro en la posicion " + (i + 1) + " NO VALIDO.", type: 'SEMANTICO', line: this.row, column: this.column }); } catch (e) { console.log(e); }
                         return null;
                     }
-                    if (tmpV.type !== f.param[i].type) {
+                    if (tmpV.type !== f.param[i].type && tmpV.type_exp === f.param[i].type_exp) {
                         try { add_error_E({ error: "Funcion: " + this.id + ", El tipo " + tmpV.type + " no coincide con el parametro " + f.param[i].id/*[0]*/ + " de la Funcion.", type: 'SEMANTICO', line: this.row, column: this.column }); } catch (e) { console.log(e); }
                         return null;
                     }
@@ -64,8 +73,20 @@ class Call {
                     //count.putInstruction(t + ' = ' + t + ' + ' + count.getRelative() + ';')
                     //count.putInstruction(t + ' = P + ' + (f.param.length + 1) + ';');
                     count.paramCall(Type.PRIMITIVO, t, tmpV.value, symb.pointer);
-                    count.getRelativePlus()
+                    count.getRelativePlus();
+                    if(symb.type_exp === Type.ARREGLO || symb.type === Type.CADENA || symb.type_exp === Type.OBJETO)
+                        symb.type_var = tmpV.type_var;
+                    else
+                        symb.type_var = Type.LOCAL;
 
+                    symb.nDimension = tmpV.nDimension;
+
+                    if(symb.pointer_stack_declarado === 0)
+                    {
+                        let pointer_ac = count.getNextTemporal();
+                        count.putInstruction(pointer_ac+' = '+ t +';');
+                        symb.pointer_stack_declarado = pointer_ac;
+                    }
                 } else {
                     try { add_error_E({ error: "Funcion: " + this.id + ", Parametro invalido.", type: 'SEMANTICO', line: this.row, column: this.column }); } catch (e) { console.log(e); }
                     return null;
@@ -87,7 +108,7 @@ class Call {
 
         count.resetRelative()
 
-        //let symb = f.symbolTab.getSymbol('return');
+        let symb = f.symbolTab.getSymbol('return');
         let tag2 = null;
         count.putInstruction('//Verificando si existe retorno.');
         let tag = count.getNextTemporal();

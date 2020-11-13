@@ -31,17 +31,41 @@ class Function {
         let tag2 = '';
         //count.putInstruction('stack[(int)' + tag2 + '] = null;');
 
-        this.symbolTab.addSymbolDirect(new Symbol(-1, this.type, this._type_exp, Type.LOCAL, Type.VAR, /*this.type_o,*/ 'return', r2, tag2));
+        this.symbolTab.addSymbolDirect(new Symbol(-1, this.type, this.type_exp, Type.LOCAL, Type.VAR, /*this.type_o,*/ 'return', r2, tag2));
         if (this.param !== null) {
 
             for (let i = 0; i < this.param.length; i++) {
                 //count.putInstruction('//Insertando parametros de Funcion. Posicion ' + (i + 1))
                 //let r = count.getRelativePlus();
                 //let tag = count.paramFunc(Type.LOCAL, r)
-                this.symbolTab.addSymbolDirect(new Symbol(-1, this.param[i].type, Type.VALOR, Type.LOCAL, Type.VAR, /*this.type_o,*/ this.param[i].id[0], i + 1, ''));
-
+                //let pointer_ac = count.getNextTemporal();
+                //count.putInstruction(pointer_ac+' = p;');
+                let simbolo = new Symbol(-1, this.param[i].type, this.param[i].type_exp, this.param[i].type_var, Type.VAR, /*this.type_o,*/ this.param[i].id, i + 1, '');
+                //simbolo.pointer_stack_declarado = pointer_ac;
+                this.symbolTab.addSymbolDirect(simbolo);
+                
             }
         }
+    }
+
+    merge_table(tab, pointer, count)
+    {
+        console.log("ingreso");
+        for(let d of tab.symbols)
+        {
+            if(!this.symbolTab.exists(d.id))
+            {
+                let nuevo = new Symbol(-1, d.type, d.type_exp, d.type_var, d.VAR, /*this.type_o,*/ d.id, d.pointer, d.tag);
+                nuevo.tabla_padre = true;
+                let sumr = count.getNextTemporal();
+                count.putInstruction(sumr+' = '+ pointer +';');
+                //nuevo.pointer_rel = sumr;
+                nuevo.pointer_stack_declarado = d.pointer_stack_declarado;
+                nuevo.nDimension = d.nDimension;
+                this.symbolTab.addSymbolDirect(nuevo);
+            }
+        }
+
     }
 
     operate(tab, count) {
@@ -53,26 +77,33 @@ class Function {
             let exit = count.getNextLabel();
             count.setExitRet(exit);
             count.putInstruction('//Insertando Funcion ' + this.id)
-            if(this.idd !== "main")
-                count.putInstruction('void ' + this.idd + '(){')
-            else
-                count.putInstruction('int ' + this.idd + '(){')
-            
-            
-            //let actual = count.getNextTemporal()
             this.ambit = count.getNextTemporal();
             count.newRelative();
             //count.putInstruction(actual + '= P;')
             //count.putInstruction('P = ' + this.ambit + ';')
-            this.symbolTab.tsuper = tab;
             this.symbolTab.functions = tab.functions;
-            count.putInstruction('//Insertando return de Funcion. Posicion ' + 0)
-            let r2 = count.getRelativePlus();
-            let tag2 = count.paramFunc(Type.LOCAL, r2)
-            count.putInstruction('stack[(int)' + tag2 + '] = 0.0;');
-            //this.symbolTab.addSymbolDirect(new Symbol(-1, this.type, this._type_exp, Type.LOCAL, Type.VAR, this.type_o, 'return', r2, tag2, false));
-            this.symbolTab.symbols[0].pointer = r2;
-            this.symbolTab.symbols[0].tag = tag2;
+            if(this.idd !== "main")
+            {
+                count.putInstruction('void ' + this.idd + '(){')
+                this.symbolTab.tsuper = tab;
+                count.putInstruction('//Insertando return de Funcion. Posicion ' + 0)
+                let r2 = count.getRelativePlus();
+                let tag2 = count.paramFunc(Type.LOCAL, r2)
+                count.putInstruction('stack[(int)' + tag2 + '] = 0.0;');
+                //this.symbolTab.addSymbolDirect(new Symbol(-1, this.type, this._type_exp, Type.LOCAL, Type.VAR, this.type_o, 'return', r2, tag2, false));
+                this.symbolTab.symbols[0].pointer = r2;
+                this.symbolTab.symbols[0].tag = tag2;
+            }
+            else
+            {
+                count.putInstruction('int ' + this.idd + '(){')
+                this.symbolTab = tab;
+            }
+            
+            
+            //let actual = count.getNextTemporal()
+
+
             if (this.param !== null) {
 
                 for (let i = 0; i < this.param.length; i++) {

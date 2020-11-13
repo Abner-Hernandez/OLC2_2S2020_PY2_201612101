@@ -68,8 +68,15 @@ class Declaration {
                         }
                             
                         let r = count.getRelativePlus();
-                        tab.addSymbolDirect(new Symbol(0, this.type, this.type_exp, this.type_var, this.type_c, /*this.type_o,*/ this.id/*[i]*/, r, tag));
-                        count.putSymbol(0, this.type, this.type_exp, this.type_var, this.type_c, /*this.type_o,*/ this.id/*[i]*/, r, tag);
+                        let tag2 = count.generateDeclaration(this.type_var, tag, r)
+
+                        let pointer_ac = count.getNextTemporal();
+                        count.putInstruction(pointer_ac+' = P;');
+                        let simbolo = new Symbol(0, this.type, this.type_exp, this.type_var, this.type_c, /*this.type_o,*/ this.id/*[i]*/, r, tag2);
+                        simbolo.pointer_stack_declarado = pointer_ac;
+                        tab.addSymbolDirect(simbolo);
+
+                        count.putSymbol(0, this.type, this.type_exp, this.type_var, this.type_c, /*this.type_o,*/ this.id/*[i]*/, r, tag2);
     
                     }
                 }
@@ -79,11 +86,21 @@ class Declaration {
                 
                     if((tmpExp != null && tmpExp != undefined) && this.type != undefined){
                         let tag = count.generateDeclaration(this.type_var, tmpExp.value, r)
-                        tab.addSymbolDirect(new Symbol(0, tmpExp.type, tmpExp.type_exp, this.type_var, this.type_c, /*this.type_o,*/ this.id/*[i]*/, r, tag));
+                        let pointer_ac = count.getNextTemporal();
+                        count.putInstruction(pointer_ac+' = P;');
+                        let simbolo = new Symbol(0, tmpExp.type, tmpExp.type_exp, this.type_var, this.type_c, /*this.type_o,*/ this.id/*[i]*/, r, tag);
+                        simbolo.pointer_stack_declarado = pointer_ac;
+                        tab.addSymbolDirect(simbolo);
+
                         count.putSymbol(0, tmpExp.type, tmpExp.type_exp, this.type_var, this.type_c, /*this.type_o,*/ this.id/*[i]*/, r, tag);
                     } else {
                         let tag = count.generateDeclaration(this.type_var, 0, r)
-                        tab.addSymbolDirect(new Symbol(0, Type.NULL, Type.VALOR, this.type_var, this.type_c, this.id, r, tag));
+                        let pointer_ac = count.getNextTemporal();
+                        count.putInstruction(pointer_ac+' = P;');
+                        let simbolo = new Symbol(0, Type.NULL, Type.VALOR, this.type_var, this.type_c, this.id, r, tag);
+                        simbolo.pointer_stack_declarado = pointer_ac;
+                        tab.addSymbolDirect(simbolo);
+                        
                         count.putSymbol(0, Type.NULL, Type.VALOR, this.type_var, this.type_c, this.id, r, "null");
                     }
                 }
@@ -102,11 +119,15 @@ class Declaration {
                 if (tmpExp !== null && (tmpExp.type === this.type || tmpExp.type === Type.NULL)) 
                 {
                     let r = count.getRelativePlus();
-                    let sim = new Symbol(0, tmpExp.type, Type.ARREGLO, this.type_var, this.type_c, /*this.type_o,*/ this.id/*[i]*/, r, tmpExp.value);
+                    let tag2 = count.generateDeclaration(this.type_var, tmpExp.value, r);
+                    let pointer_ac = count.getNextTemporal();
+                    count.putInstruction(pointer_ac+' = P;');
+                    let sim = new Symbol(0, tmpExp.type, Type.ARREGLO, this.type_var, this.type_c, /*this.type_o,*/ this.id/*[i]*/, r, tag2);
                     sim.nDimension = tmpExp.nDimension;
+                    sim.pointer_stack_declarado = pointer_ac;
                     tab.addSymbolDirect(sim);
-                    count.putSymbol(0, tmpExp.type, Type.ARREGLO, this.type_var, this.type_c, /*this.type_o,*/ this.id/*[i]*/, r, tmpExp.value);
-            }
+                    count.putSymbol(0, tmpExp.type, Type.ARREGLO, this.type_var, this.type_c, /*this.type_o,*/ this.id/*[i]*/, r, tag2);
+                }
             }else {
                 try{ add_error_E( {error: "La variable " + this.id/*[i]*/ + " ya fue declarada en este ambito.", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
             }

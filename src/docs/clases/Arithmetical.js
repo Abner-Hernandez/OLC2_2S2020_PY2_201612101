@@ -22,7 +22,19 @@ class Arithmetical {
             }else{
                 tempL = this.node_left[0].operate(tab, count);
             }
-            
+            if(tempL.type_exp === Type.ARREGLO)
+            {
+                if(tempL.nDimension === 0)
+                {
+                    count.putInstruction('//Obteniendo el valor del arreglo')
+                    count.putInstruction(tempL.value + ' = heap[(int)' + tempL.value + '];')
+                    tempL.type_exp = Type.VALOR;
+                }
+                else
+                {
+                    try{ add_error_E( {error: 'No se puede imprimir un arreglo', type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
+                }
+            }
         }
 
         if (this.node_right != null) {
@@ -30,6 +42,19 @@ class Arithmetical {
                 tempR = this.node_right.operate(tab, count);
             }else{
                 tempR = this.node_right[0].operate(tab, count);
+            }
+            if(tempR.type_exp === Type.ARREGLO)
+            {
+                if(tempR.nDimension === 0)
+                {
+                    count.putInstruction('//Obteniendo el valor del arreglo')
+                    count.putInstruction(tempR.value + ' = heap[(int)' + tempR.value + '];')
+                    tempR.type_exp = Type.VALOR;
+                }
+                else
+                {
+                    try{ add_error_E( {error: 'No se puede imprimir un arreglo', type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
+                }
             }
         }
 

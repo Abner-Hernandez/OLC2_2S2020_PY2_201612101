@@ -12,6 +12,9 @@ class Symbol {
         this.tag = _tag;
         this.arrayInfo = null;
         this.nDimension = 0;
+        this.tabla_padre = false;
+        //this.pointer_rel = 0;
+        this.pointer_stack_declarado = 0;
     }
 }
 export default Symbol;

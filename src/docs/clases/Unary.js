@@ -1,4 +1,5 @@
 import Type from './Type';
+import Value from'./Value';
 import { add_error_E } from './Reports';
 
 class Unary{
@@ -25,6 +26,7 @@ class Unary{
         }else{
             count.putInstruction(tag+' = stack[(int)'+index+'];')
         }
+        let aux = tag;
         if(this.type === Type.INCREMENTO){
             count.putInstruction(tag+' = '+tag+' + 1;')
         }else{
@@ -36,8 +38,7 @@ class Unary{
         }else{
             count.putInstruction('stack[(int)'+index+'] = '+tag+';')
         }
-        
-        return null;
+        return new Value(aux, a.type, a.type_exp, a.row, a.column);
     }
 }
 

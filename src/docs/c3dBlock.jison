@@ -66,8 +66,7 @@
 
 
 //\"[^\"]*\"                            return 'cadena';
-[0-9]+"."[0-9]+\b          			     return 'decimal';
-[0-9]+\b                   			     return 'entero';
+[0-9]+"."[0-9]+\b|[0-9]+\b    			     return 'number';
 ([a-zA-Z])[a-z0-9A-Z"_""ñ""Ñ"]*              return 'id';
 ["][%][c|i|d]["]                             return 'cprint';
 //[t][0-9]+                                    return 'temporal';
@@ -140,8 +139,8 @@ DECLARATION
      : resvar LISTID puntocoma {$$ = [new Instruction($2,null,null,null,Type.DECLARATION,1,this._$.first_line,this._$.first_column)];}
      | resvar id igual EXP puntocoma {$$ = [new Instruction($2,$4.op,$4.left,$4.right,Type.DECLARATION,2,this._$.first_line,this._$.first_column)];}
      | resvar id igual EXP2 puntocoma {$$ = [new Instruction($2,null,$4,null,Type.DECLARATION,3,this._$.first_line,this._$.first_column)];}
-     | resvar resstack llavea entero llavec puntocoma {$$ = [new Instruction(Type.STACK,$4,'[',']',Type.DECLARATION,4,this._$.first_line,this._$.first_column)];}
-     | resvar resheap llavea entero llavec puntocoma {$$ = [new Instruction(Type.HEAP,$4,'[',']',Type.DECLARATION,5,this._$.first_line,this._$.first_column)];}
+     | resvar resstack llavea number llavec puntocoma {$$ = [new Instruction(Type.STACK,$4,'[',']',Type.DECLARATION,4,this._$.first_line,this._$.first_column)];}
+     | resvar resheap llavea number llavec puntocoma {$$ = [new Instruction(Type.HEAP,$4,'[',']',Type.DECLARATION,5,this._$.first_line,this._$.first_column)];}
 ;
 
 BLOCK
@@ -169,13 +168,13 @@ INSTRUCTION
 ASSIGNMENT
      : id igual EXP puntocoma {$$ = [new Instruction($1,$3.op,$3.left,$3.right,Type.ASSIGNMENT,1,this._$.first_line,this._$.first_column)];}
      | id igual EXP2 puntocoma {$$ = [new Instruction($1,null,$3,null,Type.ASSIGNMENT,2,this._$.first_line,this._$.first_column)];}
-     | id igual resstack llavea parenta resint parentc EXP2 llavec puntocoma {$$ = [new Instruction($1,null,Type.STACK,$8,Type.ASSIGNMENT,3,this._$.first_line,this._$.first_column)];}
+     //| id igual resstack llavea parenta resint parentc EXP2 llavec puntocoma {$$ = [new Instruction($1,null,Type.STACK,$8,Type.ASSIGNMENT,3,this._$.first_line,this._$.first_column)];}
      | id igual resstack llavea EXP2 llavec puntocoma {$$ = [new Instruction($1,null,Type.STACK,$5,Type.ASSIGNMENT,3,this._$.first_line,this._$.first_column)];}
-     | id igual resheap llavea parenta resint parentc EXP2 llavec puntocoma {$$ = [new Instruction($1,null,Type.HEAP,$8,Type.ASSIGNMENT,4,this._$.first_line,this._$.first_column)];}
+     //| id igual resheap llavea parenta resint parentc EXP2 llavec puntocoma {$$ = [new Instruction($1,null,Type.HEAP,$8,Type.ASSIGNMENT,4,this._$.first_line,this._$.first_column)];}
      | id igual resheap llavea EXP2 llavec puntocoma {$$ = [new Instruction($1,null,Type.HEAP,$5,Type.ASSIGNMENT,4,this._$.first_line,this._$.first_column)];}
-     | resstack llavea parenta resint parentc EXP2 llavec igual EXP2 puntocoma {$$ = [new Instruction(Type.STACK,null,$6,$9,Type.ASSIGNMENT,5,this._$.first_line,this._$.first_column)];}
+     //| resstack llavea parenta resint parentc EXP2 llavec igual EXP2 puntocoma {$$ = [new Instruction(Type.STACK,null,$6,$9,Type.ASSIGNMENT,5,this._$.first_line,this._$.first_column)];}
      | resstack llavea EXP2 llavec igual EXP2 puntocoma {$$ = [new Instruction(Type.STACK,null,$3,$6,Type.ASSIGNMENT,5,this._$.first_line,this._$.first_column)];}
-     | resheap llavea parenta resint parentc EXP2 llavec igual EXP2 puntocoma {$$ = [new Instruction(Type.HEAP,null,$6,$9,Type.ASSIGNMENT,6,this._$.first_line,this._$.first_column)];}
+     //| resheap llavea parenta resint parentc EXP2 llavec igual EXP2 puntocoma {$$ = [new Instruction(Type.HEAP,null,$6,$9,Type.ASSIGNMENT,6,this._$.first_line,this._$.first_column)];}
      | resheap llavea EXP2 llavec igual EXP2 puntocoma {$$ = [new Instruction(Type.HEAP,null,$3,$6,Type.ASSIGNMENT,6,this._$.first_line,this._$.first_column)];}
 ;
 
@@ -212,7 +211,7 @@ CALL
 
 RETURNTT
      :resreturn puntocoma {$$ = [new Instruction(null,null,null,null,Type.RETURN,1,this._$.first_line,this._$.first_column)];}
-     |resreturn entero puntocoma {$$ = [new Instruction($2,null,null,null,Type.RETURN,2,this._$.first_line,this._$.first_column)];}
+     |resreturn number puntocoma {$$ = [new Instruction($2,null,null,null,Type.RETURN,2,this._$.first_line,this._$.first_column)];}
 ;
 
 //producciones para las operaciones relacionales
@@ -237,10 +236,10 @@ EXP
 ;
 
 EXP2
-     : decimal {$$ = {id: $1, type: Type.NUMBER};}
-     | entero {$$ = {id: $1, type: Type.NUMBER};}
-     | resta decimal {$$ = {id: '-'+$2, type: Type.NUMBER};}
-     | resta entero {$$ = {id: '-'+$2, type: Type.NUMBER};}
+     : number {$$ = {id: $1, type: Type.NUMBER};}
+     | resta number {$$ = {id: '-'+$2, type: Type.NUMBER};}
+     | parenta resint parentc id {$$ = {id: '(int)'+$4, type: Type.NUMBER};}
+     | parenta resint parentc number {$$ = {id: '(int)'+$4, type: Type.NUMBER};}
      | resnull {$$ = {id: $1, type: Type.NULL};}
      | id {$$ = {id: $1, type: Type.ID};}
      | resta id {$$ = {id: '-'+$2, type: Type.ID};}

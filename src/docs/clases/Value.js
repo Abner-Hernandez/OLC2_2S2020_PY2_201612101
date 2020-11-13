@@ -32,7 +32,7 @@ class Value {
                     this.value = this.value.replace(/\\n/g, '\n');
                     this.value = this.value.replace(/\\t/g, '\t');
                     this.value = this.value.replace(/\\r/g, '\r');
-                    if (this.value.toString().startsWith("\"")) {
+                    if (this.value.toString().startsWith("\"") || this.value.toString().startsWith("'") || this.value.toString().startsWith("`")) {
                         this.value = this.value.toString().substring(1, this.value.toString().length - 1);
                     }
                     this.value = this.value.toString().replace(/\\\"/g, "\"");
@@ -42,7 +42,9 @@ class Value {
                         count.generateDeclaration(Type.GLOBAL,this.value.charCodeAt(i),0);
                     }
                     count.generateDeclaration(Type.GLOBAL,0,0);
-                    return new Value(ini, this.type, this.type_exp, this.row, this.column);
+                    let m = new Value(ini, this.type, this.type_exp, this.row, this.column);
+                    m.type_var = Type.GLOBAL
+                    return m 
 
                 case Type.BOOL:
                     if(this.value === true){
@@ -56,22 +58,32 @@ class Value {
                     
                     if (a) {
                         let r = tab.getSymbol(this.value);
+                        /*
                         if(r.type_exp === Type.ARREGLO)
                         {
                             return new Value(r.tag, r.type, r.type_exp, r.row, r.column);
                         }else if(r.type !== Type.ENTERO && r.type !== Type.BOOL && r.type !== Type.CADENA){
                             return new Value(r.tag, r.type, r.type_exp, r.row, r.column);
                         }
-
+                        */
                         const tag = count.getNextTemporal();
                         const tag2 = count.getNextTemporal();
-                        if (r.type_var === Type.GLOBAL) {
+                        if (r.type_var === Type.GLOBAL && !r.tabla_padre) {
                             count.putInstruction(tag + ' = heap[(int)' + r.tag + '];');
-                        } else {
+                        } else if(r.type_var === Type.LOCAL && !r.tabla_padre){
                             count.putInstruction(tag2 + ' = P + ' + r.pointer + ';');
                             count.putInstruction(tag + ' = stack[(int)' + tag2 + '];');
+                        } else if(r.type_var === Type.LOCAL && r.tabla_padre)
+                        {
+                            //let relativo = count.getNextTemporal();
+                            //let relativo2 = count.getNextTemporal();
+                            //count.putInstruction(relativo + ' = P - ' +  r.pointer_stack_declarado +';');
+                            //.putInstruction(relativo2 + ' = ' + relativo + ' + ' +  r.pointer +';');
+                            count.putInstruction(tag + ' = stack[(int)' + r.pointer_stack_declarado  + '];');
                         }
+                        
                         let s = new Value(tag, r.type, r.type_exp, r.row, r.column);
+                        s.nDimension = r.nDimension;
                         s.type_var = r.type_var;
                         return s;
 
@@ -83,9 +95,23 @@ class Value {
                     let unarydata = false;
                     if(this.value.length > 1)
                     {
-                        if(this.value[this.value.length-1].value === ".pop()" || this.value[this.value.length-1].value === "reslength" || this.value[this.value.length-1].value === ".Concat()" || this.value[this.value.length-1].value === ".charAt()" || this.value[this.value.length-1].value === ".toLowerCase()" || this.value[this.value.length-1].value === ".toUpperCase()")
+                        if(this.value[this.value.length-1].value === ".length()" || this.value[this.value.length-1].value === "reslength" || this.value[this.value.length-1].value === ".Concat()" || this.value[this.value.length-1].value === ".charAt()" || this.value[this.value.length-1].value === ".toLowerCase()" || this.value[this.value.length-1].value === ".toUpperCase()")
                         {
                             unarydata = true;
+                        }
+                    }
+
+                    if(this.value.length === 2 && unarydata && this.value[0].type === Type.CADENA)
+                    {
+                        let value = this.value[0].operate(tab, count);
+                        return this.execute_native(this.value[i+1].value, count, value, null);
+                    }if(this.value.length === 3 && unarydata && this.value[0].type === Type.CADENA)
+                    {
+                        if(this.value[this.value.length-1].value === ".Concat()" || this.value[this.value.length-1].value === ".charAt()")
+                        {
+                            let value1 = this.value[0].operate(tab, count);
+                            let value2 = this.value[1].operate(tab, count);
+                            return this.execute_native(this.value[this.value.length-1].value, count, value1, value2);
                         }
                     }
 
@@ -182,6 +208,7 @@ class Value {
                                             //dimension_ass = dimension_arr - j;
                                             aux_return = new Value(puntero, r.type, Type.ARREGLO, r.row, r.column);
                                             aux_return.nDimension = dimension_arr - j;
+                                            aux_return.type_var = r.type_var;
 
                                             if(i + 1 < this.value.length)
                                             {
@@ -196,6 +223,7 @@ class Value {
                                         let aux = new Value(r.tag, r.type, Type.ARREGLO, r.row, r.column);
                                         aux.nDimension = r.nDimension;
                                         aux_return = aux;
+                                        aux_return.type_var = r.type_var;
                                     }
                                 }else if(r.type !== Type.ENTERO && r.type !== Type.BOOL && r.type !== Type.CADENA)
                                 {
@@ -245,7 +273,9 @@ class Value {
                                                     aux_return = new Value(tag2r, r.type, Type.VALOR, r.row, r.column);
                                                 else
                                                     aux_return = new Value(tag2r, r.type, Type.ARREGLO, r.row, r.column);
+                                                aux_return.type_var = r.type_var;
                                                 break;
+                                                
                                             }
                                         }
                                     }
@@ -257,6 +287,7 @@ class Value {
                                 }else if(r.type === Type.CADENA)
                                 {
                                     aux_return = new Value(r.tag, r.type, r.type_exp, r.row, r.column);
+                                    aux_return.type_var = r.type_var;
                                 }
                             } else {
                                 try{ add_error_E( {error: "El atributo / posicion arrego: " + this.value.toString() + "no a sido encontrada", type: 'SEMANTICO', line: this.row, column: this.column} ); }catch(e){ console.log(e); }
@@ -314,6 +345,7 @@ class Value {
                                                 count.putInstruction(tag2r + ' = heap[(int)' + tag2r + '];')
                                                 aux_return = new Value(tag2r, da.type, Type.ARREGLO, r.row, r.column);
                                                 aux_return.nDimension = dimArr;
+                                                aux_return.type_var = r.type_var;
                                                 break;
                                             }
                                         }
@@ -551,6 +583,7 @@ class Value {
         {
             let t = count.getNextTemporal();
             let t2 = count.getNextTemporal();
+            let t3 = count.getNextTemporal();
             
             count.putInstruction('//Insertando los parametros de llamada. Posicion 0');
             let tag2 = count.paramFunc(Type.LOCAL, count.getRelative())
@@ -558,8 +591,15 @@ class Value {
 
             count.putInstruction('//Insertando los parametros de llamada. Posicion 1');
             count.putInstruction(t + ' = '+ tag2 + ' + 1;')
-            count.putInstruction(t2 + ' = stack[(int)' + value1.tag + '];')
 
+            if (value1.type_var === Type.GLOBAL) {
+                count.putInstruction(t2 + ' = ' + value1.value + ';');
+            } else {
+                //count.putInstruction(t3 + ' = P + ' + value1.value + ';');
+                count.putInstruction(t2 + ' = stack[(int)' + value1.value + '];');
+            }
+
+            count.putInstruction(t2 + ' = stack[(int)' + value1.tag + '];')
             count.putInstruction('stack[(int)' + t + '] = '+ t2 +';');
                 
             let tt = count.getRelative();
@@ -581,6 +621,7 @@ class Value {
         {
             let t = count.getNextTemporal();
             let t2 = count.getNextTemporal();
+            let t3 = count.getNextTemporal();
             
             count.putInstruction('//Insertando los parametros de llamada. Posicion 0');
             let tag2 = count.paramFunc(Type.LOCAL, count.getRelative())
@@ -588,7 +629,13 @@ class Value {
 
             count.putInstruction('//Insertando los parametros de llamada. Posicion 1');
             count.putInstruction(t + ' = '+ tag2 + ' + 1;')
-            count.putInstruction(t2 + ' = stack[(int)' + value1.tag + '];')
+
+            if (value1.type_var === Type.GLOBAL) {
+                count.putInstruction(t2 + ' = ' + value1.value + ';');
+            } else {
+                //count.putInstruction(t3 + ' = P + ' + value1.value + ';');
+                count.putInstruction(t2 + ' = stack[(int)' + value1.value + '];');
+            }
 
             count.putInstruction('stack[(int)' + t + '] = '+ t2 +';');
                 
@@ -612,14 +659,22 @@ class Value {
             let t = count.getNextTemporal();
             let t2 = count.getNextTemporal();
             let t3 = count.getNextTemporal();
-            
+            let t4 = count.getNextTemporal();
+            let t5 = count.getNextTemporal();
+
             count.putInstruction('//Insertando los parametros de llamada. Posicion 0');
             let tag2 = count.paramFunc(Type.LOCAL, count.getRelative())
             count.putInstruction('stack[(int)' + tag2 + '] = 0.0;');
 
             count.putInstruction('//Insertando los parametros de llamada. Posicion 1');
             count.putInstruction(t + ' = '+ tag2 + ' + 1;')
-            count.putInstruction(t2 + ' = stack[(int)' + value1.tag + '];')
+
+            if (value1.type_var === Type.GLOBAL) {
+                count.putInstruction(t2 + ' = ' + value1.value + ';');
+            } else {
+                //count.putInstruction(t5 + ' = P + ' + value1.value + ';');
+                count.putInstruction(t2 + ' = stack[(int)' + value1.value + '];');
+            }
 
             count.putInstruction('stack[(int)' + t + '] = '+ t2 +';');
 
@@ -627,7 +682,14 @@ class Value {
             count.putInstruction('//Insertando los parametros de llamada. Posicion 2');
             count.putInstruction(t3 + ' = '+ t + ' + 1;')
 
-            count.putInstruction('stack[(int)' + t3 + '] = '+ value2.value +';');
+            if (value2.type_var === Type.GLOBAL) {
+                count.putInstruction(t4 + ' = ' + value2.value + ';');
+            } else {
+                //count.putInstruction(t5 + ' = P + ' + value2.value + ';');
+                count.putInstruction(t4 + ' = stack[(int)' + value2.value + '];');
+            }
+
+            count.putInstruction('stack[(int)' + t3 + '] = '+ t4 +';');
                 
             let tt = count.getRelative();
             count.putInstruction('P = P + ' + tt + ';');
@@ -649,6 +711,8 @@ class Value {
             let t = count.getNextTemporal();
             let t2 = count.getNextTemporal();
             let t3 = count.getNextTemporal();
+            let t4 = count.getNextTemporal();
+            let t5 = count.getNextTemporal();
             
             count.putInstruction('//Insertando los parametros de llamada. Posicion 0');
             let tag2 = count.paramFunc(Type.LOCAL, count.getRelative())
@@ -656,15 +720,28 @@ class Value {
 
             count.putInstruction('//Insertando los parametros de llamada. Posicion 1');
             count.putInstruction(t + ' = '+ tag2 + ' + 1;')
-            count.putInstruction(t2 + ' = stack[(int)' + value1.tag + '];')
 
-            count.putInstruction('stack[(int)' + t + '] = '+ t2 +';');
+            if (value1.type_var === Type.GLOBAL) {
+                count.putInstruction(t4 + ' = ' + value1.value + ';');
+            } else {
+                //count.putInstruction(t5 + ' = P + ' + value1.value + ';');
+                count.putInstruction(t4 + ' = stack[(int)' + value1.value + '];');
+            }
+
+            count.putInstruction('stack[(int)' + t + '] = '+ t4 +';');
 
             
             count.putInstruction('//Insertando los parametros de llamada. Posicion 2');
             count.putInstruction(t3 + ' = '+ t + ' + 1;')
 
-            count.putInstruction('stack[(int)' + t3 + '] = '+ value2.value +';');
+            if (value2.type_var === Type.GLOBAL) {
+                count.putInstruction(t2 + ' = ' + value2.value + ';');
+            } else {
+                //count.putInstruction(t5 + ' = P + ' + value2.value + ';');
+                count.putInstruction(t2 + ' = stack[(int)' + value2.value + '];');
+            }
+            
+            count.putInstruction('stack[(int)' + t3 + '] = '+ t2 +';');
                 
             let tt = count.getRelative();
             count.putInstruction('P = P + ' + tt + ';');
@@ -680,6 +757,49 @@ class Value {
             count.putInstruction('P = P - ' + tt + ';');
 
             let ret = new Value(tag2r, value1.type, this.type_exp, this.row, this.column);
+            return ret;
+        }else if(typeop === ".length()" && value1.type === Type.CADENA && value1.type_exp === Type.VALOR)
+        {
+            let t = count.getNextTemporal();
+            let t2 = count.getNextTemporal();
+            let t5 = count.getNextTemporal();
+            
+            count.putInstruction('//Insertando los parametros de llamada. Posicion 0');
+            let tag2 = count.paramFunc(Type.LOCAL, count.getRelative())
+            count.putInstruction('stack[(int)' + tag2 + '] = 0.0;');
+
+            count.putInstruction('//Insertando los parametros de llamada. Posicion 1');
+            count.putInstruction(t + ' = '+ tag2 + ' + 1;')
+
+            if (value1.type_var === Type.GLOBAL) {
+                count.putInstruction(t2 + ' = ' + value1.value + ';');
+            } else {
+                //count.putInstruction(t5 + ' = P + ' + value1.value + ';');
+                count.putInstruction(t2 + ' = stack[(int)' + value1.value + '];');
+            }
+
+            count.putInstruction('stack[(int)' + t + '] = '+ t2 +';');
+                
+            let tt = count.getRelative();
+            count.putInstruction('P = P + ' + tt + ';');
+            count.putInstruction('//Insertando la llama a la Funcion length_3d_c');
+            count.putInstruction('length_3d_c();');
+
+            let tag2r = null;
+            count.putInstruction('//Verificando si existe retorno.');
+            let tag = count.getNextTemporal();
+            tag2r = count.getNextTemporal();
+            count.putInstruction(tag + ' = P + 0;')
+            count.putInstruction(tag2r + ' = stack[(int)' + tag + '];')
+            count.putInstruction('P = P - ' + tt + ';');
+
+            let ret = new Value(tag2r, value1.type, this.type_exp, this.row, this.column);
+            return ret;
+        }else if(typeop === ".length()" && value1.type_exp === Type.ARREGLO && value1.nDimension > 0)
+        {
+            let t = count.getNextTemporal();
+            count.putInstruction(t  + ' = heap[(int)' + value1.value + '];');
+            let ret = new Value(t, Type.ENTERO, Type.VALOR, this.row, this.column);
             return ret;
         }
     }

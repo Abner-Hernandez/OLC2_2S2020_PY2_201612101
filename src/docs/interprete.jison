@@ -481,6 +481,40 @@
           count.putInstruction('stack[(int)' + tans + '] = ' + decsn + ';');
           count.putInstruction('return;\n}\n');
 
+          //insertando metodo para length -----------------------------------------------------------
+          count.putInstruction('//Insertando Funcion length_3d_c')
+          count.putInstruction('void length_3d_c(){')
+          count.putInstruction('//Insertando return de Funcion. Posicion 0')
+          let tag2lle = count.paramFunc(Type.LOCAL, 0)
+          count.putInstruction('stack[(int)' + tag2lle + '] = 0.0;');
+
+          count.putInstruction('//Insertando parametros de Funcion. Posicion 1')
+          let tag1lle = count.paramFunc(Type.LOCAL, 1)
+
+          count.putInstruction('//Empezo el cuerpo de la funcion.')
+          let puntlle = count.getNextTemporal();
+          let punt2lle = count.getNextTemporal();
+          let clle = count.getNextTemporal();
+          let tmplle = count.getNextTemporal();
+          let taglle = count.getNextLabel();
+          let tagolle = count.getNextLabel();
+          count.putInstruction(punt2lle + ' = stack[(int)'+ tag1lle + '];');
+
+          count.putInstruction(clle + ' = 0;');
+          count.putInstruction(taglle + ':');
+                
+          count.putInstruction(puntlle + ' = '+ punt2lle + ' + ' + clle + ';');
+          count.putInstruction(tmplle+' = heap[(int)' + puntlle + '];');
+                
+          count.generateIf2(tmplle,'==','0',tagolle);
+          count.putInstruction(clle+' = '+clle+' + 1;');
+          count.putInstruction('goto '+taglle+';');
+          count.putInstruction(tagolle + ':');
+          count.putInstruction('stack[(int)' + tag2lle + '] = ' + clle + ';');
+          count.putInstruction('return;\n}\n');
+
+          count.resetRelative();
+
      }
 %}
 
@@ -567,7 +601,6 @@
 "in"                    return 'resin';
 "of"                    return 'resof';
 "push"                  return 'respush';
-"pop"                   return 'respop';
 "length"                return 'reslength';
 "graficar_ts"           return 'resgraficar_ts';
 "CharAt"                return 'resCharAt';
@@ -687,7 +720,7 @@ INSTRUCTIONSG
 
 INSTRUCTIONG
 	: FUNCTION { symbolt.addFunction($1); $$ = null; }
-     | DECLARATION puntocoma { if($1 != null){$1.type_var = Type.GLOBAL; } $$ = $1; }
+     | DECLARATION puntocoma { if(Array.isArray($1)){ for(let a of $1){a.type_var = Type.GLOBAL}} } // if(a instanceof DECLARATION){a.type_var = Type.GLOBAL}
      | ASSIGMENTWITHTYPE puntocoma{ $$ = $1; }
      | DEFTYPES { $$ = null; }
      | IF { $$ = $1; }
@@ -992,7 +1025,7 @@ EXP2
 
 EXP3
      : number {$$ = new Value(Number($1),Type.ENTERO,Type.VALOR,this._$.first_line,this._$.first_column); }
-     | resta IDVALOR { if($2.length === 1 && $2[0].type === Type.ID){ $$ = new Unary($2[0],Type.RESTA,this._$.first_line,this._$.first_column); }else{ $$ = new Unary($1,Type.RESTA,this._$.first_line,this._$.first_column); } }
+     //| resta IDVALOR { if($2.length === 1 && $2[0].type === Type.ID){ $$ = new Unary($2[0],Type.RESTA,this._$.first_line,this._$.first_column); }else{ $$ = new Unary($1,Type.RESTA,this._$.first_line,this._$.first_column); } }
      | resta number { $$ = new Value(-1*Number($2),Type.ENTERO,Type.VALOR,this._$.first_line,this._$.first_column); }
      | parenta EXPRT parentc { $$ = $2; }
      | cadena {$$ = new Value($1,Type.CADENA,Type.VALOR,this._$.first_line,this._$.first_column);}
@@ -1006,6 +1039,7 @@ EXP3
      | llavea llavec {$$ = new Value(new Value(0, Type.ENTERO, Type.VALOR, this._$.first_line,this._$.first_column),Type.NULL,Type.ARREGLO,this._$.first_line,this._$.first_column);}
      | llavea DATAPRINT llavec {$$ = new Value($2,Type.NULL,Type.ARREGLO,this._$.first_line,this._$.first_column);}
      | resnew resarray parenta EXPRT parentc {$$ = new Value($4,Type.NULL,Type.ARREGLO,this._$.first_line,this._$.first_column);}
+     | cadena punto OPCADENAS { $3.unshift(new Value($1,Type.CADENA,Type.VALOR,this._$.first_line,this._$.first_column)); $$ = new Value($3,Type.ARREGLO,Type.VALOR,this._$.first_line,this._$.first_column); }
 ;
 
 
@@ -1025,14 +1059,18 @@ ARREGLO
 
 IDVALOR2
      : punto IDVALOR { $$ = $2;  }
-     | punto respop parenta parentc { $$ = [new Value(".pop()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
-     | punto reslength { $$ = [new Value($2,Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
-     | punto resCharAt parenta EXPRT parentc { $$ = [$4,new Value(".charAt()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
-     | punto resToLowerCase parenta parentc { $$ = [new Value(".toLowerCase()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
-     | punto resToUpperCase parenta parentc { $$ = [new Value(".toUpperCase()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
-     | punto resConcat parenta EXPRT parentc { $$ = [$4,new Value(".Concat()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
+     | punto OPCADENAS { $$ = $2; }
      | { $$ = []; }
 ;
+
+OPCADENAS
+     : reslength { $$ = [new Value(".length()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
+     | resCharAt parenta EXPRT parentc { $$ = [$3,new Value(".charAt()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
+     | resToLowerCase parenta parentc { $$ = [new Value(".toLowerCase()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
+     | resToUpperCase parenta parentc { $$ = [new Value(".toUpperCase()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
+     | resConcat parenta EXPRT parentc { $$ = [$3,new Value(".Concat()",Type.ID,Type.VALOR,this._$.first_line,this._$.first_column)];  }
+;
+
 
 CALLF
      :id parenta PARAMETERS { $$ = new Call($1,Type.LLAMADA,Type.LLAMADA,$3,this._$.first_line,this._$.first_column); }

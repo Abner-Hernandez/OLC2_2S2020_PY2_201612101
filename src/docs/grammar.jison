@@ -13,6 +13,20 @@
      {
           traduction += content;
      }
+
+     function ordenar_localf()
+     {
+          local_function.sort(function (a, b) {
+               if (a.name.length > b.name.length) {
+                    return 1;
+               }
+               if (a.name.length < b.name.length) {
+                    return -1;
+               }
+               // a must be equal to b
+               return 0;
+          });
+     }
 %}
 
 /* Definición Léxica */
@@ -97,7 +111,6 @@
 "in"                    return 'resin';
 "of"                    return 'resof';
 "push"                  return 'respush';
-"pop"                   return 'respop';
 "length"                return 'reslength';
 "graficar_ts"           return 'resgraficar_ts';
 "CharAt"                return 'resCharAt';
@@ -171,8 +184,8 @@ INSTRUCTIONG
 ;
 
 FUNCTIONG
-    : resfunction FIDG parenta LISTAPARAMETROS parentc RETURNT BLOCKF { $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5 + " " + $6 + " " ; for(let d of name_f){$7 = $7.split(d[0]+"(").join(d[1]+"(");} $$ += $7; if(local_function.length > 0){ for (let entry of local_function){ for(let d of name_f){entry = entry.split(d[0]+"(").join(d[1]+"(");} $$ += "\n" + entry;}} parent_name = ""; name_f = [];}
-    | resfunction FIDG parenta parentc RETURNT BLOCKF { $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5 + " "  ; for(let d of name_f){$6 = $6.split(d[0]+"(").join(d[1]+"(");} $$ += $6;  if(local_function.length > 0){ for (let entry of local_function){ for(let d of name_f){entry = entry.split(d[0]+"(").join(d[1]+"(");} $$ += "\n" + entry;}} parent_name = ""; name_f = [];}
+    : resfunction FIDG parenta LISTAPARAMETROS parentc RETURNT BLOCKF { $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5 + " " + $6 + " " ; ordenar_localf();  for(let d of name_f){$7 = $7.split(d[0]+"(").join(d[1]+"(");} $$ += $7; if(local_function.length > 0){ for (let entry of local_function){ entry = entry.contenido; for(let d of name_f){entry = entry.split(d[0]+"(").join(d[1]+"(");} $$ += "\n" + entry;}} parent_name = ""; name_f = [];}
+    | resfunction FIDG parenta parentc RETURNT BLOCKF { $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5 + " "  ; ordenar_localf(); for(let d of name_f){$6 = $6.split(d[0]+"(").join(d[1]+"(");} $$ += $6;  if(local_function.length > 0){ for (let entry of local_function){ entry = entry.contenido; for(let d of name_f){  entry = entry.split(d[0]+"(").join(d[1]+"(");} $$ += "\n" + entry;}} parent_name = ""; name_f = [];}
 ;
 
 FIDG
@@ -180,8 +193,8 @@ FIDG
 ;
 
 FUNCTIONL
-    : resfunction FIDL parenta LISTAPARAMETROS parentc RETURNT BLOCKF { name_function = ""; for(let i = parent_name.indexOf($2); i > 0 ; i--){ name_function = "___" + parent_name[i] + name_function;} name_function =  parent_name[0] + name_function; $$ = ""; local_function.push($1 + " " + $2 + $3 + " " + $4 + " " + $5 + " " + $6 + " " + $7); parent_name.pop(); name_f.push([$2, name_function]);}
-    | resfunction FIDL parenta parentc RETURNT BLOCKF { name_function = ""; for(let i = parent_name.indexOf($2); i > 0 ; i--){ name_function = "___" + parent_name[i] + name_function;} name_function =  parent_name[0] + name_function; $$ = ""; local_function.push($1 + " " + $2 + $3 + " " + $4 + " " + $5 + " " + $6); parent_name.pop(); name_f.push([$2, name_function]);}
+    : resfunction FIDL parenta LISTAPARAMETROS parentc RETURNT BLOCKF { name_function = ""; for(let i = parent_name.indexOf($2); i > 0 ; i--){ name_function = "___" + parent_name[i] + name_function;} name_function =  parent_name[0] + name_function; $$ = ""; local_function.push({contenido: $1 + " " + $2 + $3 + " " + $4 + " " + $5 + " " + $6 + " " + $7, name: name_function}); parent_name.pop(); name_f.push([$2, name_function]);}
+    | resfunction FIDL parenta parentc RETURNT BLOCKF { name_function = ""; for(let i = parent_name.indexOf($2); i > 0 ; i--){ name_function = "___" + parent_name[i] + name_function;} name_function =  parent_name[0] + name_function; $$ = ""; local_function.push({contenido: $1 + " " + $2 + $3 + " " + $4 + " " + $5 + " " + $6, name: name_function}); parent_name.pop(); name_f.push([$2, name_function]);}
 ;
 
 FIDL
@@ -204,7 +217,7 @@ INSTRUCTIONSF
 
 INSTRUCTIONF
      : INSTRUCTION { $$ = $1; }
-     | FUNCTIONL { $$ = $1; }
+     | FUNCTIONL { $$ = $1; /* necesito aqui*/ }
 ;
 
 RETURNT
@@ -510,6 +523,7 @@ EXP3
      | llavea llavec { $$ = $1 + $2 ; }
      | llavea DATAPRINT llavec { $$ = $1 + $2 + $3; }
      | resnew resarray parenta EXPRT parentc { $$ = $1 + " " + $2 + $3 + $4 + $5; }
+     | cadena punto OPCADENAS { $$ = $1 + $2 + $3; }
 ;
 
 IDVALOR  
@@ -529,13 +543,16 @@ ARREGLO
 
 IDVALOR2
      : punto IDVALOR { $$ = $1 + $2; }
-     | punto respop parenta parentc { $$ = $1 + $2 + $3 + $4; }
-     | punto reslength { $$ = $1 + $2; }
-     | punto resCharAt parenta EXPRT parentc { $$ = $1 + $2 + $3 + $4; }
-     | punto resToLowerCase parenta parentc { $$ = $1 + $2 + $3 + $4; }
-     | punto resToUpperCase parenta parentc { $$ = $1 + $2 + $3 + $4; }
-     | punto resConcat parenta EXPRT parentc { $$ = $1 + $2 + $3 + $4 + $5; }
+     | punto OPCADENAS { $$ = $1 + $2; }
      | { $$ = ""; }
+;
+
+OPCADENAS
+     : reslength { $$ = $1 ; }
+     | resCharAt parenta EXPRT parentc { $$ = $1 + $2 + $3; }
+     | resToLowerCase parenta parentc { $$ = $1 + $2 + $3; }
+     | resToUpperCase parenta parentc { $$ = $1 + $2 + $3; }
+     | resConcat parenta EXPRT parentc { $$ = $1 + $2 + $3 + $4; }
 ;
 
 CALLF

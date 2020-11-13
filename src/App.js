@@ -7,6 +7,8 @@ import { grammar } from './docs/grammar';
 import { c3dBlock } from './docs/c3dBlock';
 import { ast } from './docs/ast';
 
+//npm run deploy para subir la pagina
+
 class App extends Component {
 
   constructor(props) {

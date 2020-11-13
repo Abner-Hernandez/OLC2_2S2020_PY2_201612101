@@ -15,7 +15,6 @@ class Return {
         
         console.log(this)
         let symb = null;
-        let i = 0;
         symb = tab.getSymbol('return');
         /*for(i; i< tab.symbols.length; i++){
             if(tab.symbols[i].id === "return"){
@@ -48,7 +47,7 @@ class Return {
             symb.type_exp = tmpExp.type_exp;
             count.generateDeclaration(Type.LOCAL, tmpExp.value, symb.pointer);
         } else {
-            count.generateDeclaration(Type.LOCAL, 0.0, tab.symbols[i].pointer);
+            count.generateDeclaration(Type.LOCAL, 0, symb.pointer);
         }
         count.putInstruction('goto '+count.getExitRet()+';')
     }

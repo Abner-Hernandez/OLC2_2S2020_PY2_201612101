@@ -74,16 +74,16 @@ class InstructionTab {
                         this.putInstruction(this.instructions[i].id + ' = ' + this.instructions[i].left.id + ';');
                         break;
                     case 3:
-                        this.putInstruction(this.instructions[i].id + ' = stack[(int)' + this.instructions[i].right.id + '];');
+                        this.putInstruction(this.instructions[i].id + ' = stack[' + this.instructions[i].right.id + '];');
                         break;
                     case 4:
-                        this.putInstruction(this.instructions[i].id + ' = heap[(int)' + this.instructions[i].right.id + '];');
+                        this.putInstruction(this.instructions[i].id + ' = heap[' + this.instructions[i].right.id + '];');
                         break;
                     case 5:
-                        this.putInstruction('stack[(int)' + this.instructions[i].left.id + '] = ' + this.instructions[i].right.id + ';');
+                        this.putInstruction('stack[' + this.instructions[i].left.id + '] = ' + this.instructions[i].right.id + ';');
                         break;
                     case 6:
-                        this.putInstruction('heap[(int)' + this.instructions[i].left.id + '] = ' + this.instructions[i].right.id + ';');
+                        this.putInstruction('heap[' + this.instructions[i].left.id + '] = ' + this.instructions[i].right.id + ';');
                         break;
                 }
             } else if (this.instructions[i].type == Type.LABEL) {
