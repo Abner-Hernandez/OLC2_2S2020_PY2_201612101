@@ -102,7 +102,8 @@ case 1:
           //console.log(m);
           for(let aux of tab.Roptimize)
           {
-               try{ add_console( JSON.stringify(aux) ); }catch(e){ console.log(e); }
+               //no: _no, description: _description, row: _row, column: _col 
+               try{ add_console("# regla: " + aux.no + " Descripcion: " + aux.description + " fila: " + aux.row + " columna: " + aux.column); }catch(e){ console.log(e); }
           }
           //console.log(tab.Roptimize);
           return m;

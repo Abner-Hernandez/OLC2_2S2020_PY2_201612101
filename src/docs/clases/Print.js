@@ -40,8 +40,8 @@ class Print {
                 let cast = '';
                 switch (e.type) {
                     case Type.ENTERO:
-                        type = '%f'
-                        cast = '(float)'
+                        type = '%d'
+                        cast = ''
                         break;
                     /*
                     case Type.ENTERO:

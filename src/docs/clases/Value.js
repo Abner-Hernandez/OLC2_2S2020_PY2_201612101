@@ -43,7 +43,7 @@ class Value {
                     }
                     count.generateDeclaration(Type.GLOBAL,0,0);
                     let m = new Value(ini, this.type, this.type_exp, this.row, this.column);
-                    m.type_var = Type.GLOBAL
+                    m.type_var = null;
                     return m 
 
                 case Type.BOOL:

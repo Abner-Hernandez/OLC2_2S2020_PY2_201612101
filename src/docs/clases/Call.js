@@ -74,7 +74,7 @@ class Call {
                     //count.putInstruction(t + ' = P + ' + (f.param.length + 1) + ';');
                     count.paramCall(Type.PRIMITIVO, t, tmpV.value, symb.pointer);
                     count.getRelativePlus();
-                    if(symb.type_exp === Type.ARREGLO || symb.type === Type.CADENA || symb.type_exp === Type.OBJETO)
+                    if((symb.type_exp === Type.ARREGLO || symb.type === Type.CADENA || symb.type_exp === Type.OBJETO) && tmpV.type_var !== null)
                         symb.type_var = tmpV.type_var;
                     else
                         symb.type_var = Type.LOCAL;
