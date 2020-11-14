@@ -40,7 +40,7 @@ class Print {
                 let cast = '';
                 switch (e.type) {
                     case Type.ENTERO:
-                        type = '%d'
+                        type = '%f'
                         cast = ''
                         break;
                     /*

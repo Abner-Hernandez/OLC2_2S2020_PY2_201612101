@@ -767,30 +767,32 @@ case 33:return 46;
 break;
 case 34:return 42;
 break;
-case 35:return 47;
+case 35:return 'resFloat';
 break;
-case 36:return 8;
+case 36:return 47;
 break;
-case 37:return 9;
+case 37:return 8;
 break;
-case 38:
+case 38:return 9;
 break;
 case 39:
 break;
-case 40:return 21;
+case 40:
 break;
-case 41:return 13;
+case 41:return 21;
 break;
-case 42:return 41;
+case 42:return 13;
 break;
-case 43:return 7;
+case 43:return 41;
 break;
-case 44:/*count.putError(Type.LEXICO,'Este es un error léxico: ' + yy_.yytext, yy_.yylloc.first_line, yy_.yylloc.first_column);*/
+case 44:return 7;
+break;
+case 45:/*count.putError(Type.LEXICO,'Este es un error léxico: ' + yy_.yytext, yy_.yylloc.first_line, yy_.yylloc.first_column);*/
 break;
 }
 },
-rules: [/^(?:\/\/.*)/i,/^(?:[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/])/i,/^(?:\+\+)/i,/^(?:--)/i,/^(?:\+)/i,/^(?:-)/i,/^(?:\*)/i,/^(?:\/)/i,/^(?:%)/i,/^(?:!=)/i,/^(?:>=)/i,/^(?:<=)/i,/^(?:<)/i,/^(?:>)/i,/^(?:==)/i,/^(?:\[)/i,/^(?:\])/i,/^(?:\()/i,/^(?:\))/i,/^(?:\{)/i,/^(?:\})/i,/^(?:,)/i,/^(?:\.)/i,/^(?:=)/i,/^(?:;)/i,/^(?::)/i,/^(?:double\b)/i,/^(?:if\b)/i,/^(?:printf\b)/i,/^(?:stack\b)/i,/^(?:heap\b)/i,/^(?:goto\b)/i,/^(?:null\b)/i,/^(?:void\b)/i,/^(?:int\b)/i,/^(?:return\b)/i,/^(?:#include <stdio\.h>)/i,/^(?:#include <math\.h>)/i,/^(?:[ \r\t]+)/i,/^(?:\n)/i,/^(?:[0-9]+\.[0-9]+\b|[0-9]+\b)/i,/^(?:([a-zA-Z])[a-z0-9A-Z"_""ñ""Ñ"]*)/i,/^(?:["][%][c|i|d]["])/i,/^(?:$)/i,/^(?:.)/i],
-conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"inclusive":true}}
+rules: [/^(?:\/\/.*)/i,/^(?:[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/])/i,/^(?:\+\+)/i,/^(?:--)/i,/^(?:\+)/i,/^(?:-)/i,/^(?:\*)/i,/^(?:\/)/i,/^(?:%)/i,/^(?:!=)/i,/^(?:>=)/i,/^(?:<=)/i,/^(?:<)/i,/^(?:>)/i,/^(?:==)/i,/^(?:\[)/i,/^(?:\])/i,/^(?:\()/i,/^(?:\))/i,/^(?:\{)/i,/^(?:\})/i,/^(?:,)/i,/^(?:\.)/i,/^(?:=)/i,/^(?:;)/i,/^(?::)/i,/^(?:double\b)/i,/^(?:if\b)/i,/^(?:printf\b)/i,/^(?:stack\b)/i,/^(?:heap\b)/i,/^(?:goto\b)/i,/^(?:null\b)/i,/^(?:void\b)/i,/^(?:int\b)/i,/^(?:float\b)/i,/^(?:return\b)/i,/^(?:#include <stdio\.h>)/i,/^(?:#include <math\.h>)/i,/^(?:[ \r\t]+)/i,/^(?:\n)/i,/^(?:[0-9]+\.[0-9]+\b|[0-9]+\b)/i,/^(?:([a-zA-Z])[a-z0-9A-Z"_""ñ""Ñ"]*)/i,/^(?:["][%][c|i|d|f]["])/i,/^(?:$)/i,/^(?:.)/i],
+conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45],"inclusive":true}}
 });
 return lexer;
 })();

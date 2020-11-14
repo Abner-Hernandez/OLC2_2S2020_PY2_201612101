@@ -69,7 +69,7 @@
 //\"[^\"]*\"                            return 'cadena';
 [0-9]+"."[0-9]+\b|[0-9]+\b    			     return 'number';
 ([a-zA-Z])[a-z0-9A-Z"_""ñ""Ñ"]*              return 'id';
-["][%][c|i|d]["]                             return 'cprint';
+["][%][c|i|d|f]["]                             return 'cprint';
 //[t][0-9]+                                    return 'temporal';
 //[L][0-9]+                                    return 'etiqueta';
 //([\"]("\\\""|[^])*[^\\][\"])|[\"][\"] return 'cadena';
